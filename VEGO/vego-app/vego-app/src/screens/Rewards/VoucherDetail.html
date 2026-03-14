@@ -1,0 +1,501 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Chi tiết Voucher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            position: relative;
+            transform: scale(0.8);
+            transform-origin: center center;
+            flex-shrink: 0;
+            margin: -81px 0;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 32px;
+            overflow-y: auto;
+            position: relative;
+            scrollbar-width: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phone-screen::-webkit-scrollbar {
+            display: none;
+        }
+
+        .status-bar {
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 600;
+            background: white;
+        }
+
+        .header {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .header-title {
+            flex: 1;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+        }
+
+        .voucher-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .points-badge {
+            position: absolute;
+            top: 240px;
+            left: 20px;
+            background: #75FF93;
+            color: #1B5E20;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .content {
+            padding: 40px 20px 20px;
+            background: white;
+            flex: 1;
+        }
+
+        .button-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .voucher-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .expiry-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .conditions-list {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .condition-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .check-icon {
+            color: #75FF93;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .store-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #F8F8F8;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .store-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .store-details {
+            flex: 1;
+        }
+
+        .store-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .store-date {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .view-store {
+            color: #75FF93;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .redeem-btn {
+            width: 100%;
+            height: 52px;
+            background: #FF6B35;
+            border: none;
+            border-radius: 26px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            width: 300px;
+            max-width: 85%;
+            text-align: center;
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            background: #FFF4ED;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 30px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .modal-message {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .modal-points {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: #E8F8ED;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #4CAF50;
+            margin-bottom: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            height: 48px;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn-cancel {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        .modal-btn-confirm {
+            background: #FF6B35;
+            color: white;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: rgba(76, 175, 80, 0.95);
+        }
+
+        .toast.error {
+            background: rgba(244, 67, 54, 0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <div class="status-bar">
+                <div>9:41</div>
+                <div>📶 📶 🔋</div>
+            </div>
+
+            <div class="header">
+                <button class="back-btn" onclick="goBack()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18l-6-6 6-6" stroke="#333" stroke-width="2"/>
+                    </svg>
+                </button>
+                <div class="header-title">Chi tiết Voucher</div>
+                <div style="width: 36px;"></div>
+            </div>
+
+            <div style="position: relative;">
+                <img id="voucherImage" class="voucher-image" src="" alt="Voucher">
+                <div class="points-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    <span id="voucherPoints">500 VePoints</span>
+                </div>
+            </div>
+
+            <div class="content">
+                <h1 class="voucher-title" id="voucherTitle">Voucher Highlands Coffee 30k</h1>
+                <div class="expiry-date">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/>
+                    </svg>
+                    <span id="expiryDate">Hạn sử dụng: 31/12/2023</span>
+                </div>
+
+                <div class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#75FF93">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Điều kiện áp dụng
+                </div>
+                <ul class="conditions-list" id="conditionsList">
+                    <li class="condition-item">
+                        <span class="check-icon">✓</span>
+                        <span>Áp dụng cho đơn hàng từ 100.000đ trở lên tại tất cả cửa hàng trên toàn quốc.</span>
+                    </li>
+                </ul>
+
+                <div class="store-info">
+                    <img id="storeLogo" class="store-logo" src="" alt="Store">
+                    <div class="store-details">
+                        <div class="store-name" id="storeName">Highlands Coffee</div>
+                        <div class="store-date">Đối tác từ 2023</div>
+                    </div>
+                    <a href="#" class="view-store">Xem cửa hàng</a>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button class="redeem-btn" onclick="showConfirmModal()">Xác nhận đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-icon">🎁</div>
+            <div class="modal-title">Xác nhận đổi quà</div>
+            <div class="modal-message" id="modalMessage">Bạn có chắc muốn đổi voucher này?</div>
+            <div class="modal-points">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="10"/>
+                </svg>
+                <span id="modalPoints">500 VePoints</span>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Hủy</button>
+                <button class="modal-btn modal-btn-confirm" onclick="confirmRedeem()">Đổi ngay</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let voucherData = null;
+        let userPoints = parseInt(localStorage.getItem('userPoints') || '1250');
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const voucherId = urlParams.get('id');
+            
+            const storedData = sessionStorage.getItem('selectedVoucher');
+            if (storedData) {
+                voucherData = JSON.parse(storedData);
+                loadVoucherData();
+            }
+        };
+
+        function loadVoucherData() {
+            document.getElementById('voucherTitle').textContent = voucherData.name;
+            document.getElementById('voucherPoints').textContent = voucherData.points + ' VePoints';
+            document.getElementById('voucherImage').src = voucherData.image;
+            document.getElementById('storeLogo').src = voucherData.image;
+            document.getElementById('storeName').textContent = voucherData.name.split(' ')[1] || 'Store';
+            document.getElementById('modalPoints').textContent = voucherData.points + ' VePoints';
+            document.getElementById('modalMessage').textContent = `Bạn có chắc muốn đổi "${voucherData.name}"?`;
+            
+            const conditionsList = document.getElementById('conditionsList');
+            const conditions = [
+                'Áp dụng cho đơn hàng từ 100.000đ trở lên tại tất cả cửa hàng trên toàn quốc.',
+                'Mỗi khách hàng được đổi tối đa 02 voucher trong suốt chương trình.',
+                'Không áp dụng đồng thời với các chương trình khuyến mãi khác.',
+                'Voucher không có giá trị quy đổi thành tiền mặt.'
+            ];
+            
+            conditionsList.innerHTML = conditions.map(c => `
+                <li class="condition-item">
+                    <span class="check-icon">✓</span>
+                    <span>${c}</span>
+                </li>
+            `).join('');
+        }
+
+        function showConfirmModal() {
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('show');
+        }
+
+        function confirmRedeem() {
+            if (userPoints >= voucherData.points) {
+                userPoints -= voucherData.points;
+                localStorage.setItem('userPoints', userPoints);
+                closeModal();
+                showToast(`Đổi quà thành công! Còn ${userPoints.toLocaleString('vi-VN')} VePoints`, 'success');
+                setTimeout(() => {
+                    goBack();
+                }, 2000);
+            } else {
+                closeModal();
+                showToast(`Cần thêm ${(voucherData.points - userPoints).toLocaleString('vi-VN')} VePoints!`, 'error');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

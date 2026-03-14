@@ -1,0 +1,574 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Đăng nhập</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            position: relative;
+            transform: scale(0.8);
+            transform-origin: center center;
+            flex-shrink: 0;
+            margin: -81px 0;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #FFFFFF;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 60px 30px 40px 30px;
+        }
+
+        .decorative-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            color: #75FF93;
+            font-size: 20px;
+        }
+
+        .star-1 {
+            top: 100px;
+            left: 50px;
+            font-size: 24px;
+        }
+
+        .star-2 {
+            top: 150px;
+            right: 80px;
+            font-size: 16px;
+        }
+
+        .star-3 {
+            top: 300px;
+            left: 30px;
+            font-size: 18px;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333333;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            color: #E53935;
+            font-size: 12px;
+            margin-top: 4px;
+            margin-left: 4px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .input.error {
+            border-color: #E53935;
+            background: #FFF5F5;
+        }
+
+        .input-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input {
+            width: 100%;
+            height: 50px;
+            background: #F8F8F8;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 0 15px;
+            font-size: 16px;
+            color: #333333;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input::placeholder {
+            color: #AAAAAA;
+        }
+
+        .input:focus {
+            border-color: #75FF93;
+            background: #FFFFFF;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #AAAAAA;
+            cursor: pointer;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #75FF93;
+        }
+
+        .remember-me label {
+            font-size: 14px;
+            color: #666666;
+        }
+
+        .forgot-password {
+            font-size: 14px;
+            color: #666666;
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 50px;
+            background: #75FF93;
+            border: none;
+            border-radius: 8px;
+            color: #333333;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .login-btn:hover {
+            background: #5EE87A;
+            transform: translateY(-1px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            background: #CCCCCC;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #E0E0E0;
+        }
+
+        .divider span {
+            padding: 0 20px;
+            color: #AAAAAA;
+            font-size: 14px;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .social-btn {
+            flex: 1;
+            height: 50px;
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #333333;
+            font-weight: 500;
+        }
+
+        .social-btn:hover {
+            border-color: #75FF93;
+            transform: translateY(-1px);
+        }
+
+        .facebook-btn::before {
+            content: "f";
+            width: 20px;
+            height: 20px;
+            background: #1877f2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .google-btn::before {
+            content: "G";
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #4285f4, #34a853, #fbbc05, #ea4335);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .register-link p {
+            color: #666666;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #333333;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animation classes */
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .logo-container { animation-delay: 0.2s; }
+        .welcome-title { animation-delay: 0.3s; }
+        .form-container { animation-delay: 0.4s; }
+        .social-login { animation-delay: 0.5s; }
+        .register-link { animation-delay: 0.6s; }
+
+        /* Responsive - phone frame stays fixed */
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <!-- Decorative Stars -->
+            <div class="decorative-stars">
+                <div class="star star-1">✦</div>
+                <div class="star star-2">✦</div>
+                <div class="star star-3">✦</div>
+            </div>
+
+            <!-- Logo Container -->
+            <div class="logo-container fade-in-up">
+                <div class="logo-icon">
+                    <img src="../../../assets/images/logoden-removebg-preview.png" alt="VeGo Logo" />
+                </div>
+            </div>
+
+            <!-- Welcome Title -->
+            <div class="welcome-title fade-in-up">
+                Chào mừng !
+            </div>
+
+            <!-- Form Container -->
+            <div class="form-container fade-in-up">
+                <div class="input-group">
+                    <label class="input-label">Tài khoản</label>
+                    <input 
+                        type="text" 
+                        class="input" 
+                        placeholder="Nhập tên tài khoản"
+                        id="username"
+                    />
+                    <div class="error-message" id="usernameError">Vui lòng nhập tên tài khoản!</div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Mật khẩu</label>
+                    <input 
+                        type="password" 
+                        class="input" 
+                        placeholder="Nhập mật khẩu"
+                        id="password"
+                    />
+                    <button class="password-toggle" onclick="togglePassword()">👁</button>
+                    <div class="error-message" id="passwordError">Vui lòng nhập mật khẩu!</div>
+                    
+                    <div class="remember-forgot">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Nhớ mật khẩu</label>
+                        </div>
+                        <a href="#" class="forgot-password" onclick="forgotPassword()">Quên mật khẩu?</a>
+                    </div>
+                </div>
+
+                <button class="login-btn" onclick="handleLogin()" id="loginBtn">
+                    Đăng nhập
+                </button>
+            </div>
+
+            <!-- Divider -->
+            <div class="divider">
+                <span>Hoặc đăng nhập với</span>
+            </div>
+
+            <!-- Social Login -->
+            <div class="social-login fade-in-up">
+                <button class="social-btn facebook-btn" onclick="loginWithFacebook()">
+                    Facebook
+                </button>
+                <button class="social-btn google-btn" onclick="loginWithGoogle()">
+                    Google
+                </button>
+            </div>
+
+            <!-- Register Link -->
+            <div class="register-link fade-in-up">
+                <p>Chưa có tài khoản? <a href="register-preview.html">Đăng ký</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const toggle = document.querySelector('.password-toggle');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                toggle.textContent = '👁';
+            }
+        }
+
+        function forgotPassword() {
+            alert('Tính năng quên mật khẩu sẽ được tích hợp trong ứng dụng thực tế');
+        }
+
+        function loginWithFacebook() {
+            alert('Đăng nhập với Facebook\n(Tính năng sẽ được tích hợp trong ứng dụng thực tế)');
+        }
+
+        function loginWithGoogle() {
+            alert('Đăng nhập với Google\n(Tính năng sẽ được tích hợp trong ứng dụng thực tế)');
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            // Clear previous errors
+            clearErrors();
+            
+            let hasError = false;
+            
+            if (!username) {
+                showError('username', 'Vui lòng nhập tên tài khoản!');
+                hasError = true;
+            }
+            
+            if (!password) {
+                showError('password', 'Vui lòng nhập mật khẩu!');
+                hasError = true;
+            } else if (password.length < 6) {
+                showError('password', 'Mật khẩu phải có ít nhất 6 ký tự!');
+                hasError = true;
+            }
+            
+            if (hasError) {
+                return;
+            }
+            
+            // Simulate login
+            const button = document.getElementById('loginBtn');
+            button.textContent = 'Đang đăng nhập...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                // Chuyển hướng đến trang home với bản đồ
+                window.location.href = '../Home/home-map.html';
+            }, 1500);
+        }
+
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            
+            field.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+
+        function clearErrors() {
+            const inputs = document.querySelectorAll('.input');
+            const errors = document.querySelectorAll('.error-message');
+            
+            inputs.forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            errors.forEach(error => {
+                error.classList.remove('show');
+            });
+        }
+
+        // Add input focus effects and clear errors on input
+        document.querySelectorAll('.input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.borderColor = '#75FF93';
+                this.style.background = '#FFFFFF';
+                this.classList.remove('error');
+                
+                // Hide error message when user starts typing
+                const errorElement = document.getElementById(this.id + 'Error');
+                if (errorElement) {
+                    errorElement.classList.remove('show');
+                }
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.borderColor = '#E0E0E0';
+                this.style.background = '#F8F8F8';
+            });
+            
+            input.addEventListener('input', function() {
+                // Clear error when user starts typing
+                this.classList.remove('error');
+                const errorElement = document.getElementById(this.id + 'Error');
+                if (errorElement) {
+                    errorElement.classList.remove('show');
+                }
+            });
+        });
+
+        // Add enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+    </script>
+</body>
+</html>

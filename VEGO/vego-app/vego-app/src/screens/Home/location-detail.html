@@ -1,0 +1,1009 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Chi tiết địa điểm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            position: relative;
+            transform: scale(0.8);
+            transform-origin: center center;
+            flex-shrink: 0;
+            margin: -81px 0;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 32px;
+            overflow-y: auto;
+            position: relative;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        .phone-screen::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 50px 20px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            background: white;
+            border: none;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .favorite-btn {
+            width: 36px;
+            height: 36px;
+            background: white;
+            border: none;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #75FF93 0%, #5EE87A 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-placeholder {
+            font-size: 48px;
+        }
+
+        .status-badges {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.open {
+            background: #75FF93;
+        }
+
+        /* Content */
+        .content {
+            padding: 20px;
+        }
+
+        .location-header {
+            margin-bottom: 20px;
+        }
+
+        .location-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .location-address {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .rating-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .rating-score {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .stars {
+            color: #FFD700;
+        }
+
+        .rating-count {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .open-status {
+            color: #75FF93;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* Price Section */
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .update-time {
+            font-size: 12px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .price-list {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .price-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .price-item:last-child {
+            border-bottom: none;
+        }
+
+        .price-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .price-icon {
+            width: 40px;
+            height: 40px;
+            background: #F5F5F5;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .price-details {
+            flex: 1;
+        }
+
+        .price-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .price-desc {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .price-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #75FF93;
+        }
+
+        /* Estimate Section */
+        .estimate-section {
+            background: #E8F8ED;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .estimate-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .estimate-subtitle {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .material-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .material-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .material-btn.active {
+            background: #75FF93;
+            border-color: #75FF93;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .weight-input-section {
+            margin-bottom: 16px;
+        }
+
+        .weight-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .weight-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .weight-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #DDD;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .weight-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #75FF93;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .weight-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #75FF93;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .weight-display {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            min-width: 50px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            text-align: center;
+        }
+
+        .weight-display:hover {
+            background: #F0F0F0;
+        }
+
+        .weight-input-field {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            min-width: 50px;
+            width: 70px;
+            border: 2px solid #75FF93;
+            border-radius: 4px;
+            padding: 4px 8px;
+            text-align: center;
+            outline: none;
+        }
+
+        /* Selected Materials */
+        .selected-materials {
+            margin-bottom: 16px;
+        }
+
+        .material-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .material-item-info {
+            flex: 1;
+        }
+
+        .material-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .material-item-detail {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .material-item-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: #75FF93;
+            margin-right: 8px;
+        }
+
+        .remove-material-btn {
+            width: 24px;
+            height: 24px;
+            background: #FFE0E0;
+            border: none;
+            border-radius: 12px;
+            color: #E53935;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .estimate-result {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .estimate-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .estimate-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .continue-btn {
+            width: 100%;
+            height: 48px;
+            background: #FF6B35;
+            border: none;
+            border-radius: 24px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .action-buttons-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            height: 48px;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .contact-btn {
+            width: 100%;
+            background: white;
+            color: #FF6B35;
+            border: 2px solid #FF6B35;
+        }
+
+        .directions-btn {
+            flex: 1;
+            background: #E8F8ED;
+            color: #2E7D32;
+            font-weight: 600;
+        }
+
+        .directions-btn:hover {
+            background: #D0F0DD;
+        }
+
+        .call-btn {
+            flex: 1;
+            background: #FF6B35;
+            color: white;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Error Message */
+        .error-message {
+            color: #E53935;
+            font-size: 13px;
+            margin-top: 8px;
+            text-align: center;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            height: auto;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <!-- Header -->
+            <div class="header">
+                <button class="back-btn" onclick="goBack()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18l-6-6 6-6" stroke="#333" stroke-width="2"/>
+                    </svg>
+                </button>
+                <div class="header-title">Chi tiết địa điểm</div>
+                <button class="favorite-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#E53935" stroke-width="2"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Image Gallery -->
+            <div class="image-gallery">
+                <div class="gallery-placeholder">🏪</div>
+                <div class="status-badges">
+                    <span class="badge open">Đang mở</span>
+                    <span class="badge" id="distanceBadge">📍 0.5 km</span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Location Header -->
+                <div class="location-header">
+                    <h1 class="location-name" id="locationName">Vựa ve chai Moi Moi</h1>
+                    <div class="location-address">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#666">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <span id="locationAddress">12 Nguyễn Văn Bảo, Gò Vấp</span>
+                    </div>
+                    <div class="rating-section">
+                        <div class="rating-score">
+                            <span id="ratingScore">4.9</span>
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                        </div>
+                        <span class="rating-count" id="ratingCount">(123 đánh giá)</span>
+                        <span class="open-status">Đang mở cửa</span>
+                    </div>
+                    <p class="description">
+                        Chuyên thu mua các loại giấy vụn, nhựa, sắt thép, kim loại màu, đồ điện tử cũ. Giá cả hợp lý, cân đúng, trả tiền nhanh chóng.
+                    </p>
+                </div>
+
+                <!-- Price List -->
+                <div class="section-title">
+                    Bảng giá hôm nay
+                    <span class="update-time">Cập nhật: 09:00 AM</span>
+                </div>
+                <div class="price-list">
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-icon">📄</div>
+                            <div class="price-details">
+                                <div class="price-name">Giấy vụn</div>
+                                <div class="price-desc">Các loại, giấy báo</div>
+                            </div>
+                        </div>
+                        <div class="price-value">5.000đ/kg</div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-icon">🧴</div>
+                            <div class="price-details">
+                                <div class="price-name">Nhựa</div>
+                                <div class="price-desc">Chai, thùng nhựa</div>
+                            </div>
+                        </div>
+                        <div class="price-value">3.000đ/kg</div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-icon">🔧</div>
+                            <div class="price-details">
+                                <div class="price-name">Giấy vụn</div>
+                                <div class="price-desc">Sắt, thép, đồng, nhôm</div>
+                            </div>
+                        </div>
+                        <div class="price-value">6.000đ/kg</div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-icon">📱</div>
+                            <div class="price-details">
+                                <div class="price-name">Lon nhôm</div>
+                                <div class="price-desc">Lon bia, lon nước</div>
+                            </div>
+                        </div>
+                        <div class="price-value">30.000đ/kg</div>
+                    </div>
+                </div>
+
+                <!-- Estimate Section -->
+                <div class="estimate-section">
+                    <div class="estimate-title">Ước tính giá trị</div>
+                    <div class="estimate-subtitle">Chọn loại phế liệu và khối lượng</div>
+                    <div class="material-buttons">
+                        <button class="material-btn active" data-price="3000" data-material="Nhựa">Nhựa</button>
+                        <button class="material-btn" data-price="5000" data-material="Giấy">Giấy</button>
+                        <button class="material-btn" data-price="6000" data-material="Sắt">Sắt</button>
+                        <button class="material-btn" data-price="30000" data-material="Nhôm">Nhôm</button>
+                    </div>
+                    <div class="weight-input-section">
+                        <div class="weight-label">Khối lượng (kg)</div>
+                        <div class="weight-input-wrapper">
+                            <input type="range" 
+                                   class="weight-slider" 
+                                   id="weightSlider" 
+                                   min="0" 
+                                   max="100" 
+                                   value="0" 
+                                   step="0.1" />
+                            <span class="weight-display" id="weightDisplay">0</span>
+                            <span>kg</span>
+                        </div>
+                    </div>
+                    <button class="continue-btn" onclick="addMaterial()" style="background: #75FF93; color: #333; margin-bottom: 16px;">
+                        + Thêm phế liệu
+                    </button>
+                    <div class="error-message" id="addMaterialError">⚠️ Vui lòng chọn khối lượng phế liệu</div>
+
+                    <!-- Selected Materials List -->
+                    <div class="selected-materials" id="selectedMaterials"></div>
+
+                    <div class="estimate-result">
+                        <span class="estimate-label">Tổng ước tính:</span>
+                        <span class="estimate-amount" id="estimateAmount">0đ</span>
+                    </div>
+                    <button class="continue-btn" onclick="continueToChooseMethod()">Tiếp tục</button>
+                    <div class="error-message" id="continueError">⚠️ Vui lòng thêm ít nhất một loại phế liệu</div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <div class="action-buttons-row">
+                        <button class="action-btn directions-btn" onclick="openDirections()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
+                            </svg>
+                            Chỉ đường
+                        </button>
+                        <button class="action-btn call-btn" onclick="makePhoneCall()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                            </svg>
+                            Gọi điện
+                        </button>
+                    </div>
+                    <button class="action-btn contact-btn" onclick="openChat()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                        </svg>
+                        Liên hệ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Toast Notification -->
+            <div class="toast" id="toast">Đã sao chép số điện thoại</div>
+        </div>
+    </div>
+
+    <script>
+        // Array to store selected materials
+        let selectedMaterials = [];
+        
+        // Load location data from sessionStorage
+        window.onload = function() {
+            const locationData = sessionStorage.getItem('selectedLocation');
+            if (locationData) {
+                const location = JSON.parse(locationData);
+                
+                // Update UI with location data
+                document.getElementById('locationName').textContent = location.title;
+                document.getElementById('locationAddress').textContent = location.address;
+                document.getElementById('ratingScore').textContent = location.rating;
+                document.getElementById('ratingCount').textContent = `(${location.reviews} đánh giá)`;
+                document.getElementById('distanceBadge').textContent = `📍 ${location.distance}`;
+            }
+        };
+
+        // Weight slider
+        const slider = document.getElementById('weightSlider');
+        const weightDisplay = document.getElementById('weightDisplay');
+        
+        let currentPrice = 3000; // Nhựa default
+        let currentMaterial = 'Nhựa';
+        
+        // Slider input
+        slider.addEventListener('input', function() {
+            const weight = parseFloat(this.value).toFixed(1);
+            weightDisplay.textContent = weight;
+        });
+        
+        // Click on weight display to input manually
+        weightDisplay.addEventListener('click', function() {
+            const currentWeight = this.textContent;
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'weight-input-field';
+            input.value = currentWeight;
+            input.min = '0';
+            input.max = '100';
+            input.step = '0.1';
+            
+            // Replace display with input
+            this.replaceWith(input);
+            input.focus();
+            input.select();
+            
+            // Handle input completion
+            function finishInput() {
+                let newWeight = parseFloat(input.value) || 0;
+                if (newWeight < 0) newWeight = 0;
+                if (newWeight > 100) newWeight = 100;
+                
+                // Update slider and display
+                slider.value = newWeight;
+                weightDisplay.textContent = newWeight.toFixed(1);
+                
+                // Replace input with display
+                input.replaceWith(weightDisplay);
+            }
+            
+            input.addEventListener('blur', finishInput);
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    finishInput();
+                }
+            });
+        });
+        
+        // Material buttons
+        document.querySelectorAll('.material-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.material-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update price and material based on selection
+                currentPrice = parseInt(this.getAttribute('data-price'));
+                currentMaterial = this.getAttribute('data-material');
+            });
+        });
+
+        // Add material to list
+        function addMaterial() {
+            const weight = parseFloat(slider.value);
+            const errorMsg = document.getElementById('addMaterialError');
+            
+            if (weight === 0) {
+                errorMsg.classList.add('show');
+                setTimeout(() => {
+                    errorMsg.classList.remove('show');
+                }, 3000);
+                return;
+            }
+            
+            // Hide error if showing
+            errorMsg.classList.remove('show');
+            
+            // Map material name to image
+            const materialImages = {
+                'Giấy': '../../../assets/images/giaybaocu.png',
+                'Sắt': '../../../assets/images/satvun.png',
+                'Nhôm': '../../../assets/images/volonbia.png',
+                'Nhựa': '../../../assets/images/nhua.png'
+            };
+            
+            // Create material object
+            const material = {
+                name: currentMaterial,
+                weight: weight,
+                price: currentPrice,
+                total: weight * currentPrice,
+                image: materialImages[currentMaterial] || '../../../assets/images/giaybaocu.png'
+            };
+            
+            // Add to array
+            selectedMaterials.push(material);
+            
+            // Update UI
+            renderSelectedMaterials();
+            updateTotalEstimate();
+            
+            // Reset slider
+            slider.value = 0;
+            weightDisplay.textContent = '0';
+        }
+
+        // Render selected materials list
+        function renderSelectedMaterials() {
+            const container = document.getElementById('selectedMaterials');
+            container.innerHTML = '';
+            
+            selectedMaterials.forEach((material, index) => {
+                const item = document.createElement('div');
+                item.className = 'material-item';
+                item.innerHTML = `
+                    <div class="material-item-info">
+                        <div class="material-item-name">${material.name}</div>
+                        <div class="material-item-detail">${material.weight}kg × ${material.price.toLocaleString('vi-VN')}đ</div>
+                    </div>
+                    <span class="material-item-price">${material.total.toLocaleString('vi-VN')}đ</span>
+                    <button class="remove-material-btn" onclick="removeMaterial(${index})">×</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Remove material from list
+        function removeMaterial(index) {
+            selectedMaterials.splice(index, 1);
+            renderSelectedMaterials();
+            updateTotalEstimate();
+        }
+
+        // Update total estimate
+        function updateTotalEstimate() {
+            const total = selectedMaterials.reduce((sum, m) => sum + m.total, 0);
+            document.getElementById('estimateAmount').textContent = total.toLocaleString('vi-VN') + 'đ';
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
+
+        // Open Google Maps for directions
+        function openDirections() {
+            const locationData = sessionStorage.getItem('selectedLocation');
+            if (locationData) {
+                const location = JSON.parse(locationData);
+                const address = encodeURIComponent(location.address);
+                window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
+            }
+        }
+
+        // Make phone call - Copy phone number to clipboard
+        function makePhoneCall() {
+            const locationData = sessionStorage.getItem('selectedLocation');
+            if (locationData) {
+                const location = JSON.parse(locationData);
+                const phoneNumber = location.phone || '0123456789';
+                
+                // Copy to clipboard
+                navigator.clipboard.writeText(phoneNumber).then(() => {
+                    showToast('Đã sao chép số điện thoại: ' + phoneNumber);
+                }).catch(() => {
+                    showToast('Đã sao chép số điện thoại: ' + phoneNumber);
+                });
+            }
+        }
+
+        // Open chat with shop
+        function openChat() {
+            const locationData = sessionStorage.getItem('selectedLocation');
+            if (locationData) {
+                const location = JSON.parse(locationData);
+                // Save shop info for chat vào localStorage
+                localStorage.setItem('chatShop', JSON.stringify({
+                    name: location.title,
+                    phone: location.phone || '0123456789'
+                }));
+                
+                // Navigate to chat page
+                document.body.style.transition = 'opacity 0.3s ease';
+                document.body.style.opacity = '0';
+                
+                setTimeout(() => {
+                    window.location.href = 'chat.html';
+                }, 300);
+            }
+        }
+
+        // Copy phone number and show toast
+        function copyPhoneNumber() {
+            const phoneNumber = '0123456789';
+            
+            navigator.clipboard.writeText(phoneNumber).then(() => {
+                showToast();
+            }).catch(() => {
+                showToast();
+            });
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message || 'Đã sao chép số điện thoại';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // Continue to choose method page
+        function continueToChooseMethod() {
+            const errorMsg = document.getElementById('continueError');
+            
+            if (selectedMaterials.length === 0) {
+                errorMsg.classList.add('show');
+                setTimeout(() => {
+                    errorMsg.classList.remove('show');
+                }, 3000);
+                return;
+            }
+            
+            // Hide error if showing
+            errorMsg.classList.remove('show');
+            
+            // Calculate total
+            const total = selectedMaterials.reduce((sum, m) => sum + m.total, 0);
+            
+            // Save estimate data with all materials
+            const estimateData = {
+                source: 'location',
+                materials: selectedMaterials,
+                total: total,
+                location: JSON.parse(sessionStorage.getItem('selectedLocation'))
+            };
+            
+            sessionStorage.setItem('estimateData', JSON.stringify(estimateData));
+            
+            // Add fade out animation
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = '0';
+            
+            setTimeout(() => {
+                window.location.href = 'choose-method.html';
+            }, 300);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="vie'port" content="'idth=device-width, initial-scale=1.0">
+    <title>VeGo - Splash Screen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+                .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            position: relative;
+            transform: scale(0.8);
+            transform-origin: center center;
+            flex-shrink: 0;
+            margin: -81px 0;
+        }
+
+        .phone-frame::before {
+            display: none;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background-color: #F8F8F8;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            height: 44px;
+            background-color: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            position: relative;
+            z-index: 5;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 0 40px;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 120px;
+        }
+
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #75FF93 0%, #5EE87A 100%);
+            border-radius: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(117, 255, 147, 0.2);
+        }
+
+        .app-icon img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .app-name {
+            font-size: 64px;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .app-name-green {
+            color: #75FF93;
+        }
+
+        .tagline {
+            font-size: 20px;
+            color: #AAAAAA;
+            text-align: center;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .loading-section {
+            position: absolute;
+            bottom: 100px;
+            left: 40px;
+            right: 40px;
+        }
+
+        .loading-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #AAAAAA;
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+
+        .percentage-text {
+            font-size: 14px;
+            color: #AAAAAA;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            height: 4px;
+            background-color: #E8E8E8;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #75FF93 0%, #5EE87A 100%);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Animation classes */
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .app-icon { animation-delay: 0.2s; }
+        .app-name { animation-delay: 0.4s; }
+        .tagline { animation-delay: 0.6s; }
+        .loading-section { animation-delay: 0.8s; }
+
+        /* Responsive - phone frame stays fixed */
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="status-right">
+                    <span>📶</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="logo-container">
+                    <!-- App Icon - Ô vuông xanh bo góc với logo -->
+                    <div class="app-icon fade-in-up">
+                        <img src="../../../assets/images/logo.png" alt="VeGo Logo" />
+                    </div>
+
+                    <!-- App Name -->
+                    <div class="app-name fade-in-up">
+                        Ve<span class="app-name-green">Go</span>
+                    </div>
+
+                    <!-- Tagline -->
+                    <div class="tagline fade-in-up">Ve Chai Công Nghệ</div>
+                </div>
+            </div>
+
+            <!-- Loading Section -->
+            <div class="loading-section fade-in-up">
+                <div class="loading-header">
+                    <div class="loading-text">LOADING</div>
+                    <div class="percentage-text" id="percentage">0%</div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Loading animation
+        let progress = 0;
+        const progressBar = document.getElementById('progressBar');
+        const percentageText = document.getElementById('percentage');
+        
+        function updateProgress() {
+            if (progress <= 100) {
+                progressBar.style.width = progress + '%';
+                percentageText.textContent = Math.round(progress) + '%';
+                progress += 2; // Tốc độ loading chậm hơn để thực tế
+                
+                setTimeout(updateProgress, 50); // Update mỗi 50ms
+            } else {
+                // Animation hoàn thành
+                setTimeout(() => {
+                    // Fade out effect
+                    document.querySelector('.phone-screen').style.opacity = '0';
+                    document.querySelector('.phone-screen').style.transition = 'opacity 0.5s ease-out';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'welcome-screen.html';
+                    }, 500);
+                }, 500);
+            }
+        }
+        
+        // Bắt đầu loading animation sau khi trang load
+        window.addEventListener('load', () => {
+            setTimeout(updateProgress, 1000); // Bắt đầu sau 1 giây
+        });
+        
+        // Thêm hiệu ứng click cho demo
+        document.querySelector('.app-icon').addEventListener('click', () => {
+            document.querySelector('.app-icon').style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                document.querySelector('.app-icon').style.transform = 'scale(1)';
+            }, 150);
+        });
+    </script>
+</body>
+</html>

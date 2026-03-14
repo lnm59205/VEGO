@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Trợ giúp & Hỗ trợ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; align-items: center;
+            justify-content: center; padding: 20px;
+        }
+        .phone-frame {
+            width: 375px; height: 812px; background: #000;
+            border-radius: 40px; padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            transform: scale(0.8); transform-origin: center center;
+            flex-shrink: 0; margin: -81px 0;
+        }
+        .phone-screen {
+            width: 100%; height: 100%; background: #F8F8F8;
+            border-radius: 32px; overflow-y: auto; overflow-x: hidden;
+            display: flex; flex-direction: column;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .phone-screen::-webkit-scrollbar { display: none; }
+        .header {
+            background: white; padding: 50px 20px 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 10;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .back-btn {
+            width: 36px; height: 36px; display: flex;
+            align-items: center; justify-content: center;
+            cursor: pointer; background: none; border: none;
+            font-size: 24px; color: #333;
+        }
+        .header-title { font-size: 16px; font-weight: 600; color: #333; }
+        .placeholder { width: 36px; }
+        .content { flex: 1; padding: 16px 16px 24px; }
+        .contact-banner {
+            background: linear-gradient(135deg, #75FF93, #4CAF50);
+            border-radius: 16px; padding: 20px;
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 20px;
+        }
+        .contact-icon { font-size: 40px; }
+        .contact-text h3 { font-size: 16px; font-weight: 700; color: #333; }
+        .contact-text p { font-size: 13px; color: #555; margin-top: 4px; }
+        .contact-btns { display: flex; gap: 10px; margin-bottom: 20px; }
+        .contact-btn {
+            flex: 1; padding: 14px; border-radius: 16px;
+            border: none; cursor: pointer; display: flex;
+            flex-direction: column; align-items: center; gap: 6px;
+            font-size: 13px; font-weight: 600; transition: all 0.2s;
+        }
+        .contact-btn:active { transform: scale(0.96); }
+        .contact-btn .btn-icon { font-size: 24px; }
+        .btn-chat { background: #E8F8ED; color: #4CAF50; }
+        .btn-call { background: #E3F2FD; color: #1976D2; }
+        .btn-email { background: #FFF3E0; color: #F57C00; }
+        .section-label {
+            font-size: 12px; font-weight: 700; color: #999;
+            letter-spacing: 1px; text-transform: uppercase;
+            margin: 4px 4px 10px;
+        }
+        .faq-card {
+            background: white; border-radius: 16px; overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 16px;
+        }
+        .faq-item {
+            border-bottom: 1px solid #F5F5F5; overflow: hidden;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-question {
+            width: 100%; padding: 16px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: white; border: none; cursor: pointer;
+            text-align: left; font-family: inherit;
+            font-size: 14px; font-weight: 600; color: #333;
+            transition: background 0.2s;
+        }
+        .faq-question:hover { background: #F8F8F8; }
+        .faq-arrow { font-size: 18px; color: #999; transition: transform 0.3s; flex-shrink: 0; }
+        .faq-item.open .faq-arrow { transform: rotate(90deg); }
+        .faq-answer {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            font-size: 13px; color: #666; line-height: 1.6;
+            padding: 0 20px;
+        }
+        .faq-item.open .faq-answer { max-height: 200px; padding: 0 20px 16px; }
+        .menu-section {
+            background: white; border-radius: 16px; overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 16px;
+        }
+        .menu-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 1px solid #F5F5F5;
+            cursor: pointer; background: white; border: none;
+            width: 100%; text-align: left; transition: background 0.2s;
+        }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:hover { background: #F8F8F8; }
+        .menu-left { display: flex; align-items: center; gap: 12px; }
+        .menu-icon { font-size: 20px; }
+        .menu-name { font-size: 14px; font-weight: 500; color: #333; }
+        .menu-arrow { font-size: 18px; color: #CCC; }
+        .version-text {
+            text-align: center; font-size: 11px; color: #BDBDBD;
+            margin-top: 8px; letter-spacing: 1px;
+        }
+        .toast {
+            position: fixed; top: 80px; left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(33,33,33,0.95); color: white;
+            padding: 12px 20px; border-radius: 8px; font-size: 14px;
+            z-index: 200; opacity: 0; transition: all 0.3s ease-out;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="phone-frame">
+    <div class="phone-screen">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">‹</button>
+            <div class="header-title">Trợ giúp & Hỗ trợ</div>
+            <div class="placeholder"></div>
+        </div>
+        <div class="content">
+            <div class="contact-banner">
+                <div class="contact-icon">🎧</div>
+                <div class="contact-text">
+                    <h3>Chúng tôi luôn sẵn sàng!</h3>
+                    <p>Hỗ trợ 24/7 qua chat, điện thoại hoặc email</p>
+                </div>
+            </div>
+
+            <div class="contact-btns">
+                <button class="contact-btn btn-chat" onclick="openChat()">
+                    <span class="btn-icon">💬</span>Chat ngay
+                </button>
+                <button class="contact-btn btn-call" onclick="callSupport()">
+                    <span class="btn-icon">📞</span>Gọi điện
+                </button>
+                <button class="contact-btn btn-email" onclick="sendEmail()">
+                    <span class="btn-icon">📧</span>Email
+                </button>
+            </div>
+
+            <div class="section-label">Câu hỏi thường gặp</div>
+            <div class="faq-card">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Làm thế nào để bán phế liệu qua VeGo?
+                        <span class="faq-arrow">›</span>
+                    </button>
+                    <div class="faq-answer">Bạn chỉ cần mở app, ấn nút camera ở giữa màn hình để chụp ảnh vật liệu, hệ thống sẽ tự nhận diện và gợi ý điểm thu gom gần nhất. Sau đó chọn điểm phù hợp và đặt lịch bán.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        VePoints là gì và dùng để làm gì?
+                        <span class="faq-arrow">›</span>
+                    </button>
+                    <div class="faq-answer">VePoints là điểm thưởng tích lũy mỗi khi bạn bán phế liệu qua VeGo. Bạn có thể đổi VePoints lấy voucher giảm giá, quà tặng hoặc tiền mặt trong mục Ưu đãi.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Tôi nhận tiền bằng cách nào?
+                        <span class="faq-arrow">›</span>
+                    </button>
+                    <div class="faq-answer">Tiền sẽ được thanh toán trực tiếp tại điểm thu gom hoặc chuyển khoản vào tài khoản ngân hàng bạn đã liên kết trong vòng 24 giờ sau giao dịch.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Ứng dụng hỗ trợ những loại vật liệu nào?
+                        <span class="faq-arrow">›</span>
+                    </button>
+                    <div class="faq-answer">VeGo hỗ trợ thu mua giấy, nhựa, kim loại, thủy tinh, điện tử cũ và nhiều loại phế liệu khác. Dùng tính năng camera để nhận diện chính xác loại vật liệu của bạn.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Làm sao để xem lịch sử giao dịch?
+                        <span class="faq-arrow">›</span>
+                    </button>
+                    <div class="faq-answer">Vào mục Tài khoản → Lịch sử giao dịch, hoặc ấn tab Hoạt động ở thanh điều hướng phía dưới để xem toàn bộ lịch sử bán hàng của bạn.</div>
+                </div>
+            </div>
+
+            <div class="section-label">Thêm</div>
+            <div class="menu-section">
+                <button class="menu-item" onclick="showToast('Đang mở chính sách bảo mật...')">
+                    <div class="menu-left">
+                        <span class="menu-icon">🔒</span>
+                        <span class="menu-name">Chính sách bảo mật</span>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </button>
+                <button class="menu-item" onclick="showToast('Đang mở điều khoản sử dụng...')">
+                    <div class="menu-left">
+                        <span class="menu-icon">📄</span>
+                        <span class="menu-name">Điều khoản sử dụng</span>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </button>
+                <button class="menu-item" onclick="showToast('Đang mở hướng dẫn sử dụng...')">
+                    <div class="menu-left">
+                        <span class="menu-icon">📖</span>
+                        <span class="menu-name">Hướng dẫn sử dụng</span>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </button>
+                <button class="menu-item" onclick="rateApp()">
+                    <div class="menu-left">
+                        <span class="menu-icon">⭐</span>
+                        <span class="menu-name">Đánh giá ứng dụng</span>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                </button>
+            </div>
+
+            <div class="version-text">VEGO VERSION 2.1.0</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleFaq(btn) {
+        const item = btn.parentElement;
+        item.classList.toggle('open');
+    }
+
+    function openChat() {
+        document.body.style.transition = 'opacity 0.3s ease';
+        document.body.style.opacity = '0';
+        setTimeout(() => { window.location.href = '../Home/chat.html'; }, 300);
+    }
+
+    function callSupport() {
+        navigator.clipboard.writeText('1800 6868').then(() => {
+            showToast('Đã sao chép số hotline: 1800 6868');
+        }).catch(() => showToast('Hotline hỗ trợ: 1800 6868'));
+    }
+
+    function sendEmail() {
+        showToast('Email hỗ trợ: support@vego.vn');
+    }
+
+    function rateApp() {
+        showToast('Cảm ơn bạn đã đánh giá VeGo! ⭐');
+    }
+
+    function goBack() {
+        document.body.style.transition = 'opacity 0.3s ease';
+        document.body.style.opacity = '0';
+        setTimeout(() => { window.location.href = 'account.html'; }, 300);
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+</script>
+</body>
+</html>

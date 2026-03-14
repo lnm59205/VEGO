@@ -1,0 +1,625 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Quét phế liệu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            position: relative;
+            transform: scale(0.8);
+            transform-origin: center center;
+            flex-shrink: 0;
+            margin: -81px 0;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Camera View */
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        /* Overlay */
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        /* Header */
+        .camera-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 50px 20px 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+            pointer-events: auto;
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .camera-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Scan Frame */
+        .scan-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            height: 280px;
+            border: 3px solid #75FF93;
+            border-radius: 20px;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+        }
+
+        .scan-corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 4px solid #75FF93;
+        }
+
+        .scan-corner.top-left {
+            top: -4px;
+            left: -4px;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 20px 0 0 0;
+        }
+
+        .scan-corner.top-right {
+            top: -4px;
+            right: -4px;
+            border-left: none;
+            border-bottom: none;
+            border-radius: 0 20px 0 0;
+        }
+
+        .scan-corner.bottom-left {
+            bottom: -4px;
+            left: -4px;
+            border-right: none;
+            border-top: none;
+            border-radius: 0 0 0 20px;
+        }
+
+        .scan-corner.bottom-right {
+            bottom: -4px;
+            right: -4px;
+            border-left: none;
+            border-top: none;
+            border-radius: 0 0 20px 0;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #75FF93, transparent);
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(280px);
+            }
+        }
+
+        /* Instructions */
+        .instructions {
+            position: absolute;
+            bottom: 200px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 15px;
+            padding: 0 40px;
+            pointer-events: none;
+        }
+
+        /* Controls */
+        .camera-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 20px 40px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            pointer-events: auto;
+        }
+
+        .capture-btn {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border: 5px solid #75FF93;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .capture-btn:active {
+            transform: scale(0.9);
+        }
+
+        .flash-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Result Modal */
+        .result-modal {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            max-height: 70%;
+            overflow-y: auto;
+        }
+
+        .result-modal.show {
+            transform: translateY(0);
+        }
+
+        .result-handle {
+            width: 40px;
+            height: 4px;
+            background: #DDD;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .result-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .detected-material {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #E8F8ED;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .material-icon {
+            width: 50px;
+            height: 50px;
+            background: #75FF93;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .material-info {
+            flex: 1;
+        }
+
+        .material-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .material-confidence {
+            font-size: 13px;
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .weight-input-section {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .weight-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #F5F5F5;
+            border-radius: 12px;
+        }
+
+        .weight-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            outline: none;
+        }
+
+        .weight-unit {
+            font-size: 16px;
+            color: #999;
+            font-weight: 600;
+        }
+
+        .price-estimate {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #FFF4ED;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .estimate-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .estimate-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FF6B35;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            height: 48px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        .btn-primary {
+            background: #FF6B35;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+
+            <div class="camera-overlay">
+                <div class="camera-header">
+                    <button class="close-btn" onclick="closeCamera()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
+                    <div class="camera-title">Quét phế liệu</div>
+                    <div style="width: 40px;"></div>
+                </div>
+
+                <div class="scan-frame">
+                    <div class="scan-corner top-left"></div>
+                    <div class="scan-corner top-right"></div>
+                    <div class="scan-corner bottom-left"></div>
+                    <div class="scan-corner bottom-right"></div>
+                    <div class="scan-line"></div>
+                </div>
+
+                <div class="instructions">
+                    Đặt phế liệu vào khung hình để nhận diện
+                </div>
+
+                <div class="camera-controls">
+                    <button class="flash-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                        </svg>
+                    </button>
+                    <button class="capture-btn" onclick="captureImage()"></button>
+                    <button class="flash-btn" onclick="switchCamera()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Modal -->
+            <div class="result-modal" id="resultModal">
+                <div class="result-handle"></div>
+                <img id="capturedImage" class="result-image" src="" alt="Captured">
+                
+                <div class="detected-material">
+                    <div class="material-icon" id="materialIcon">📄</div>
+                    <div class="material-info">
+                        <div class="material-name" id="materialName">Giấy vụn</div>
+                        <div class="material-confidence">Độ chính xác: <span id="confidence">95%</span></div>
+                    </div>
+                </div>
+
+                <div class="weight-input-section">
+                    <div class="input-label">Nhập cân nặng</div>
+                    <div class="weight-input-wrapper">
+                        <input type="number" 
+                               class="weight-input" 
+                               id="weightInput" 
+                               placeholder="0" 
+                               min="0" 
+                               step="0.1"
+                               oninput="calculateEstimate()">
+                        <span class="weight-unit">kg</span>
+                    </div>
+                </div>
+
+                <div class="price-estimate">
+                    <span class="estimate-label">Giá trị ước tính:</span>
+                    <span class="estimate-value" id="estimateValue">0đ</span>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="retakePhoto()">Chụp lại</button>
+                    <button class="btn btn-primary" onclick="confirmMaterial()">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let currentStream = null;
+        let detectedMaterial = null;
+
+        // Material database with prices
+        const materials = {
+            paper: { 
+                name: 'Giấy vụn', 
+                icon: '📄', 
+                price: 5000, 
+                description: 'Các loại, giấy báo',
+                keywords: ['paper', 'cardboard', 'newspaper'] 
+            },
+            plastic: { 
+                name: 'Nhựa', 
+                icon: '🧴', 
+                price: 3000, 
+                description: 'Chai, thùng nhựa',
+                keywords: ['plastic', 'bottle', 'container'] 
+            },
+            metal: { 
+                name: 'Kim loại', 
+                icon: '🔧', 
+                price: 6000, 
+                description: 'Sắt, thép, đồng, nhôm',
+                keywords: ['metal', 'aluminum', 'steel', 'iron', 'copper'] 
+            },
+            aluminum: { 
+                name: 'Lon nhôm', 
+                icon: '🥫', 
+                price: 30000, 
+                description: 'Lon bia, lon nước',
+                keywords: ['can', 'aluminum can', 'beer can', 'soda can'] 
+            }
+        };
+
+        // Start camera
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' },
+                    audio: false
+                });
+                video.srcObject = stream;
+                currentStream = stream;
+            } catch (err) {
+                console.error('Camera error:', err);
+                alert('Không thể truy cập camera. Vui lòng cho phép quyền truy cập camera.');
+            }
+        }
+
+        // Capture image
+        function captureImage() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            
+            const imageData = canvas.toDataURL('image/jpeg');
+            document.getElementById('capturedImage').src = imageData;
+            
+            // Simulate AI recognition
+            recognizeMaterial();
+            
+            // Show result modal
+            document.getElementById('resultModal').classList.add('show');
+        }
+
+        // Simulate AI material recognition
+        function recognizeMaterial() {
+            // Random material detection (in real app, this would be AI/ML)
+            const materialTypes = Object.keys(materials);
+            const randomType = materialTypes[Math.floor(Math.random() * materialTypes.length)];
+            detectedMaterial = materials[randomType];
+            
+            // Random confidence between 85-98%
+            const confidence = Math.floor(Math.random() * 13) + 85;
+            
+            // Update UI
+            document.getElementById('materialIcon').textContent = detectedMaterial.icon;
+            document.getElementById('materialName').textContent = detectedMaterial.name;
+            document.getElementById('confidence').textContent = confidence + '%';
+        }
+
+        // Calculate price estimate
+        function calculateEstimate() {
+            const weight = parseFloat(document.getElementById('weightInput').value) || 0;
+            const estimate = weight * detectedMaterial.price;
+            document.getElementById('estimateValue').textContent = estimate.toLocaleString('vi-VN') + 'đ';
+        }
+
+        // Retake photo
+        function retakePhoto() {
+            document.getElementById('resultModal').classList.remove('show');
+            document.getElementById('weightInput').value = '';
+            document.getElementById('estimateValue').textContent = '0đ';
+        }
+
+        // Confirm material
+        function confirmMaterial() {
+            const weight = parseFloat(document.getElementById('weightInput').value);
+            
+            if (!weight || weight <= 0) {
+                alert('Vui lòng nhập cân nặng hợp lệ');
+                return;
+            }
+            
+            // Create material data matching the format used in location-detail
+            const materialData = {
+                name: detectedMaterial.name,
+                weight: weight,
+                price: detectedMaterial.price,
+                total: weight * detectedMaterial.price,
+                image: detectedMaterial.icon
+            };
+            
+            // Create estimate data for choose-method page
+            const estimateData = {
+                source: 'camera',
+                materials: [materialData],
+                total: materialData.total,
+                location: {
+                    title: 'Quét tự động',
+                    address: 'Chọn điểm thu gom sau'
+                }
+            };
+            
+            // Save to sessionStorage
+            sessionStorage.setItem('estimateData', JSON.stringify(estimateData));
+            sessionStorage.setItem('scannedMaterial', JSON.stringify(materialData));
+            
+            // Navigate to choose method page
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = '0';
+            
+            setTimeout(() => {
+                window.location.href = '../Home/choose-method.html';
+            }, 300);
+        }
+
+        // Switch camera
+        function switchCamera() {
+            // Toggle between front and back camera
+            alert('Chức năng đổi camera đang được phát triển');
+        }
+
+        // Close camera
+        function closeCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            window.location.href = '../Home/home-map.html';
+        }
+
+        // Start camera on load
+        window.onload = startCamera;
+    </script>
+</body>
+</html>

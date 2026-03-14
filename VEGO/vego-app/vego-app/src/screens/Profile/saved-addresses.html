@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Địa chỉ đã lưu</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; align-items: center;
+            justify-content: center; padding: 20px;
+        }
+        .phone-frame {
+            width: 375px; height: 812px; background: #000;
+            border-radius: 40px; padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            transform: scale(0.8); transform-origin: center center;
+            flex-shrink: 0; margin: -81px 0;
+        }
+        .phone-screen {
+            width: 100%; height: 100%; background: #F8F8F8;
+            border-radius: 32px; overflow: hidden;
+            position: relative;
+            display: flex; flex-direction: column;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .phone-screen::-webkit-scrollbar { display: none; }
+        .content { flex: 1; padding: 16px; overflow-y: auto; scrollbar-width: none; }
+        .content::-webkit-scrollbar { display: none; }
+        .header {
+            background: white; padding: 50px 20px 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 10;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .back-btn {
+            width: 36px; height: 36px; display: flex;
+            align-items: center; justify-content: center;
+            cursor: pointer; background: none; border: none;
+            font-size: 24px; color: #333;
+        }
+        .header-title { font-size: 16px; font-weight: 600; color: #333; }
+        .add-btn {
+            background: none; border: none;
+            color: #75FF93; font-size: 24px; cursor: pointer; line-height: 1;
+        }
+        .address-card {
+            background: white; border-radius: 16px; padding: 16px;
+            margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .address-type {
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 8px;
+        }
+        .type-badge {
+            background: #E8F8ED; color: #4CAF50;
+            font-size: 11px; font-weight: 700;
+            padding: 3px 10px; border-radius: 20px;
+        }
+        .type-badge.work { background: #E3F2FD; color: #1976D2; }
+        .type-badge.other { background: #FFF3E0; color: #F57C00; }
+        .address-name { font-size: 15px; font-weight: 600; color: #333; }
+        .address-detail { font-size: 13px; color: #999; margin-top: 4px; line-height: 1.5; }
+        .address-actions {
+            display: flex; gap: 8px; margin-top: 12px;
+        }
+        .action-btn {
+            flex: 1; padding: 8px; border-radius: 20px;
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            border: none; transition: all 0.2s;
+        }
+        .edit-btn { background: #F0F0F0; color: #333; }
+        .delete-btn { background: #FFEBEE; color: #E53935; }
+        .empty-state {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 60px 20px; gap: 12px;
+        }
+        .empty-icon { font-size: 48px; }
+        .empty-text { font-size: 15px; color: #999; text-align: center; }
+        .add-address-btn {
+            width: 100%; padding: 16px; background: #75FF93;
+            border: none; border-radius: 24px; font-size: 16px;
+            font-weight: 600; color: #333; cursor: pointer;
+            margin-top: 8px; transition: all 0.2s;
+        }
+        /* Modal */
+        .modal-overlay {
+            display: none; position: absolute; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 100;
+            align-items: flex-end; justify-content: center;
+            border-radius: 32px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white; border-radius: 24px 24px 0 0;
+            padding: 24px 20px 40px; width: 100%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        .modal-title { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 20px; }
+        .modal-field { margin-bottom: 16px; }
+        .modal-label { font-size: 12px; color: #999; margin-bottom: 6px; }
+        .modal-input {
+            width: 100%; padding: 12px 16px; border: 1.5px solid #E0E0E0;
+            border-radius: 12px; font-size: 15px; outline: none;
+            font-family: inherit; transition: border-color 0.2s;
+        }
+        .modal-input:focus { border-color: #75FF93; }
+        .modal-select {
+            width: 100%; padding: 12px 16px; border: 1.5px solid #E0E0E0;
+            border-radius: 12px; font-size: 15px; outline: none;
+            font-family: inherit; background: white; cursor: pointer;
+        }
+        .modal-btns { display: flex; gap: 12px; margin-top: 20px; }
+        .modal-cancel {
+            flex: 1; padding: 14px; background: #F0F0F0;
+            border: none; border-radius: 20px; font-size: 15px;
+            font-weight: 600; color: #333; cursor: pointer;
+        }
+        .modal-save {
+            flex: 1; padding: 14px; background: #75FF93;
+            border: none; border-radius: 20px; font-size: 15px;
+            font-weight: 600; color: #333; cursor: pointer;
+        }
+        .toast {
+            position: absolute; top: 80px; left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(33,33,33,0.95); color: white;
+            padding: 12px 20px; border-radius: 8px; font-size: 14px;
+            z-index: 200; opacity: 0; transition: all 0.3s ease-out;
+            pointer-events: none; white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+<div class="phone-frame">
+    <div class="phone-screen">
+        <div class="toast" id="toast"></div>
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal">
+                <div class="modal-title" id="modalTitle">Thêm địa chỉ mới</div>
+                <div class="modal-field">
+                    <div class="modal-label">Tên địa chỉ</div>
+                    <input class="modal-input" id="addrName" placeholder="VD: Nhà riêng, Công ty..." />
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">Loại địa chỉ</div>
+                    <select class="modal-select" id="addrType">
+                        <option value="home">🏠 Nhà riêng</option>
+                        <option value="work">🏢 Công ty</option>
+                        <option value="other">📍 Khác</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">Địa chỉ chi tiết</div>
+                    <input class="modal-input" id="addrDetail" placeholder="Số nhà, tên đường..." />
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">Quận / Huyện</div>
+                    <input class="modal-input" id="addrDistrict" placeholder="VD: Hà Đông, Cầu Giấy..." />
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">Tỉnh / Thành phố</div>
+                    <input class="modal-input" id="addrCity" placeholder="VD: Hà Nội, TP.HCM..." />
+                </div>
+                <div class="modal-btns">
+                    <button class="modal-cancel" onclick="closeModal()">Hủy</button>
+                    <button class="modal-save" onclick="saveAddress()">Lưu</button>
+                </div>
+            </div>
+        </div>
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">‹</button>
+            <div class="header-title">Địa chỉ đã lưu</div>
+            <button class="add-btn" onclick="openModal()">+</button>
+        </div>
+        <div class="content" id="addressList"></div>
+    </div>
+</div>
+
+<script>
+    let addresses = JSON.parse(localStorage.getItem('savedAddresses') || '[]');
+    let editIndex = -1;
+
+    const typeLabels = { home: '🏠 Nhà riêng', work: '🏢 Công ty', other: '📍 Khác' };
+    const typeBadgeClass = { home: '', work: 'work', other: 'other' };
+
+    function render() {
+        const list = document.getElementById('addressList');
+        if (addresses.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📍</div>
+                    <div class="empty-text">Chưa có địa chỉ nào được lưu</div>
+                    <button class="add-address-btn" onclick="openModal()">+ Thêm địa chỉ mới</button>
+                </div>`;
+            return;
+        }
+        list.innerHTML = addresses.map((a, i) => `
+            <div class="address-card">
+                <div class="address-type">
+                    <span class="type-badge ${typeBadgeClass[a.type]}">${typeLabels[a.type]}</span>
+                </div>
+                <div class="address-name">${a.name}</div>
+                <div class="address-detail">${a.detail}, ${a.district}, ${a.city}</div>
+                <div class="address-actions">
+                    <button class="action-btn edit-btn" onclick="editAddress(${i})">✏️ Sửa</button>
+                    <button class="action-btn delete-btn" onclick="deleteAddress(${i})">🗑 Xóa</button>
+                </div>
+            </div>`).join('');
+    }
+
+    function openModal(idx = -1) {
+        editIndex = idx;
+        document.getElementById('modalTitle').textContent = idx >= 0 ? 'Sửa địa chỉ' : 'Thêm địa chỉ mới';
+        if (idx >= 0) {
+            const a = addresses[idx];
+            document.getElementById('addrName').value = a.name;
+            document.getElementById('addrType').value = a.type;
+            document.getElementById('addrDetail').value = a.detail;
+            document.getElementById('addrDistrict').value = a.district;
+            document.getElementById('addrCity').value = a.city;
+        } else {
+            ['addrName','addrDetail','addrDistrict','addrCity'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('addrType').value = 'home';
+        }
+        document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('show');
+    }
+
+    function saveAddress() {
+        const name = document.getElementById('addrName').value.trim();
+        const detail = document.getElementById('addrDetail').value.trim();
+        const district = document.getElementById('addrDistrict').value.trim();
+        const city = document.getElementById('addrCity').value.trim();
+        if (!name || !detail) { showToast('Vui lòng nhập đầy đủ thông tin'); return; }
+        const addr = { name, type: document.getElementById('addrType').value, detail, district, city };
+        if (editIndex >= 0) addresses[editIndex] = addr;
+        else addresses.push(addr);
+        localStorage.setItem('savedAddresses', JSON.stringify(addresses));
+        closeModal();
+        render();
+        showToast(editIndex >= 0 ? 'Đã cập nhật địa chỉ' : 'Đã thêm địa chỉ mới');
+    }
+
+    function editAddress(i) { openModal(i); }
+
+    function deleteAddress(i) {
+        if (confirm('Xóa địa chỉ này?')) {
+            addresses.splice(i, 1);
+            localStorage.setItem('savedAddresses', JSON.stringify(addresses));
+            render();
+            showToast('Đã xóa địa chỉ');
+        }
+    }
+
+    function goBack() {
+        document.body.style.transition = 'opacity 0.3s ease';
+        document.body.style.opacity = '0';
+        setTimeout(() => { window.location.href = 'account.html'; }, 300);
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    render();
+</script>
+</body>
+</html>

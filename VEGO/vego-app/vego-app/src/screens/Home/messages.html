@@ -1,0 +1,311 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Tin nhắn</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            transform: scale(0.8);
+            transform-origin: center center;
+            flex-shrink: 0;
+            margin: -81px 0;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 32px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 600;
+            background: white;
+        }
+
+        .header {
+            background: white;
+            padding: 16px 20px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .chat-list::-webkit-scrollbar { display: none; }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 20px;
+            background: white;
+            border-bottom: 1px solid #F5F5F5;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .chat-item:active { background: #F5F5F5; }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            background: #75FF93;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .chat-info { flex: 1; min-width: 0; }
+
+        .chat-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-last-msg {
+            font-size: 13px;
+            color: #999;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            color: #BBB;
+            flex-shrink: 0;
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-icon { font-size: 56px; margin-bottom: 16px; }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            height: 80px;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid rgba(224,224,224,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-label { color: #75FF93; }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div style="display:flex;gap:4px;">
+                    <span>📶</span><span>📶</span><span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">Tin nhắn</div>
+            </div>
+
+            <!-- Chat List -->
+            <div class="chat-list" id="chatList"></div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="navigateTo('home-map.html')">
+                    <div class="nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">Trang chủ</div>
+                </div>
+                <div class="nav-item" onclick="navigateTo('../Activity/activity.html')">
+                    <div class="nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">Hoạt động</div>
+                </div>
+                <div class="nav-item active">
+                    <div class="nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">Tin nhắn</div>
+                </div>
+                <div class="nav-item" onclick="navigateTo('../Rewards/RewardsScreen.html')">
+                    <div class="nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">Ưu đãi</div>
+                </div>
+                <div class="nav-item" onclick="navigateTo('../Profile/account.html')">
+                    <div class="nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">Tài khoản</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = '0';
+            setTimeout(() => { window.location.href = page; }, 300);
+        }
+
+        function openChat(shopId, shopName) {
+            localStorage.setItem('chatShop', JSON.stringify({ name: shopName }));
+            navigateTo('chat.html');
+        }
+
+        function renderConversations() {
+            const chatList = document.getElementById('chatList');
+            const conversations = JSON.parse(localStorage.getItem('conversations') || '[]');
+
+            if (conversations.length === 0) {
+                chatList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">💬</div>
+                        <div class="empty-title">Chưa có tin nhắn nào</div>
+                        <div class="empty-desc">Liên hệ với các điểm thu gom trên bản đồ để bắt đầu trò chuyện</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sắp xếp theo thời gian mới nhất
+            conversations.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            chatList.innerHTML = conversations.map(conv => `
+                <div class="chat-item" onclick="openChat('${escapeHtml(conv.shopId)}', '${escapeHtml(conv.shopName)}')">
+                    <div class="chat-avatar">🏪</div>
+                    <div class="chat-info">
+                        <div class="chat-name">${escapeHtml(conv.shopName)}</div>
+                        <div class="chat-last-msg">${escapeHtml(conv.lastMessage || '')}</div>
+                    </div>
+                    <div class="chat-time">${conv.lastTime || ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        window.onload = function() {
+            renderConversations();
+            // Fade in
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => { document.body.style.opacity = '1'; }, 50);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Phương thức thanh toán</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; align-items: center;
+            justify-content: center; padding: 20px;
+        }
+        .phone-frame {
+            width: 375px; height: 812px; background: #000;
+            border-radius: 40px; padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            transform: scale(0.8); transform-origin: center center;
+            flex-shrink: 0; margin: -81px 0;
+        }
+        .phone-screen {
+            width: 100%; height: 100%; background: #F8F8F8;
+            border-radius: 32px; overflow-y: auto; overflow-x: hidden;
+            position: relative;
+            display: flex; flex-direction: column;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .phone-screen::-webkit-scrollbar { display: none; }
+        .header {
+            background: white; padding: 50px 20px 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 10;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .back-btn {
+            width: 36px; height: 36px; display: flex;
+            align-items: center; justify-content: center;
+            cursor: pointer; background: none; border: none;
+            font-size: 24px; color: #333;
+        }
+        .header-title { font-size: 16px; font-weight: 600; color: #333; }
+        .placeholder { width: 36px; }
+        .content { flex: 1; padding: 16px; }
+        .section-label {
+            font-size: 12px; font-weight: 700; color: #999;
+            letter-spacing: 1px; text-transform: uppercase;
+            margin: 8px 4px 10px;
+        }
+        .method-card {
+            background: white; border-radius: 16px; padding: 16px 20px;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;
+            transition: all 0.2s; border: 2px solid transparent;
+        }
+        .method-card.selected { border-color: #75FF93; }
+        .method-card:active { transform: scale(0.98); }
+        .method-icon {
+            width: 48px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0;
+        }
+        .method-icon.cash { background: #E8F8ED; }
+        .method-icon.momo { background: #FCE4EC; }
+        .method-icon.zalopay { background: #E3F2FD; }
+        .method-icon.vnpay { background: #FFF3E0; }
+        .method-icon.bank { background: #F3E5F5; }
+        .method-info { flex: 1; }
+        .method-name { font-size: 15px; font-weight: 600; color: #333; }
+        .method-desc { font-size: 12px; color: #999; margin-top: 2px; }
+        .method-check {
+            width: 22px; height: 22px; border-radius: 50%;
+            border: 2px solid #DDD; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 12px; flex-shrink: 0; transition: all 0.2s;
+        }
+        .method-card.selected .method-check {
+            background: #75FF93; border-color: #75FF93; color: #333;
+        }
+        .bank-section {
+            background: white; border-radius: 16px; padding: 16px 20px;
+            margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .bank-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 0; border-bottom: 1px solid #F5F5F5;
+        }
+        .bank-row:last-child { border-bottom: none; }
+        .bank-left { display: flex; align-items: center; gap: 12px; }
+        .bank-logo {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: #F0F0F0; display: flex; align-items: center;
+            justify-content: center; font-size: 18px;
+        }
+        .bank-name { font-size: 14px; font-weight: 600; color: #333; }
+        .bank-number { font-size: 12px; color: #999; }
+        .bank-remove {
+            background: none; border: none; color: #E53935;
+            font-size: 18px; cursor: pointer; padding: 4px;
+        }
+        .add-bank-btn {
+            width: 100%; padding: 14px; background: #F8F8F8;
+            border: 2px dashed #DDD; border-radius: 16px;
+            font-size: 15px; color: #999; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 24px; transition: all 0.2s;
+        }
+        .add-bank-btn:hover { border-color: #75FF93; color: #4CAF50; }
+        /* Modal */
+        .modal-overlay {
+            display: none; position: absolute; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 100;
+            align-items: flex-end; justify-content: center;
+            border-radius: 32px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white; border-radius: 24px 24px 0 0;
+            padding: 24px 20px 40px; width: 100%;
+        }
+        .modal-title { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 20px; }
+        .modal-field { margin-bottom: 16px; }
+        .modal-label { font-size: 12px; color: #999; margin-bottom: 6px; }
+        .modal-input {
+            width: 100%; padding: 12px 16px; border: 1.5px solid #E0E0E0;
+            border-radius: 12px; font-size: 15px; outline: none; font-family: inherit;
+        }
+        .modal-input:focus { border-color: #75FF93; }
+        .modal-btns { display: flex; gap: 12px; margin-top: 20px; }
+        .modal-cancel {
+            flex: 1; padding: 14px; background: #F0F0F0;
+            border: none; border-radius: 20px; font-size: 15px;
+            font-weight: 600; color: #333; cursor: pointer;
+        }
+        .modal-save {
+            flex: 1; padding: 14px; background: #75FF93;
+            border: none; border-radius: 20px; font-size: 15px;
+            font-weight: 600; color: #333; cursor: pointer;
+        }
+        .toast {
+            position: absolute; top: 70px; left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(33,33,33,0.95); color: white;
+            padding: 10px 18px; border-radius: 8px; font-size: 13px;
+            z-index: 200; opacity: 0; transition: all 0.3s ease-out;
+            pointer-events: none; white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+<div class="phone-frame">
+    <div class="phone-screen">
+        <div class="toast" id="toast"></div>
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal">
+                <div class="modal-title">Liên kết tài khoản ngân hàng</div>
+                <div class="modal-field">
+                    <div class="modal-label">Tên ngân hàng</div>
+                    <input class="modal-input" id="bankName" placeholder="VD: Vietcombank, BIDV..." />
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">Số tài khoản</div>
+                    <input class="modal-input" id="bankNumber" type="number" placeholder="Nhập số tài khoản" />
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">Tên chủ tài khoản</div>
+                    <input class="modal-input" id="bankOwner" placeholder="Nhập tên chủ tài khoản" />
+                </div>
+                <div class="modal-btns">
+                    <button class="modal-cancel" onclick="closeModal()">Hủy</button>
+                    <button class="modal-save" onclick="saveBank()">Liên kết</button>
+                </div>
+            </div>
+        </div>
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">‹</button>
+            <div class="header-title">Phương thức thanh toán</div>
+            <div class="placeholder"></div>
+        </div>
+        <div class="content">
+            <div class="section-label">Thanh toán nhanh</div>
+            <div class="method-card selected" id="method-cash" onclick="selectMethod('cash')">
+                <div class="method-icon cash">💵</div>
+                <div class="method-info">
+                    <div class="method-name">Tiền mặt</div>
+                    <div class="method-desc">Thanh toán trực tiếp khi giao dịch</div>
+                </div>
+                <div class="method-check">✓</div>
+            </div>
+            <div class="method-card" id="method-momo" onclick="selectMethod('momo')">
+                <div class="method-icon momo">💜</div>
+                <div class="method-info">
+                    <div class="method-name">Ví MoMo</div>
+                    <div class="method-desc">Thanh toán qua ví điện tử MoMo</div>
+                </div>
+                <div class="method-check"></div>
+            </div>
+            <div class="method-card" id="method-zalopay" onclick="selectMethod('zalopay')">
+                <div class="method-icon zalopay">💙</div>
+                <div class="method-info">
+                    <div class="method-name">ZaloPay</div>
+                    <div class="method-desc">Thanh toán qua ví ZaloPay</div>
+                </div>
+                <div class="method-check"></div>
+            </div>
+            <div class="method-card" id="method-vnpay" onclick="selectMethod('vnpay')">
+                <div class="method-icon vnpay">🧡</div>
+                <div class="method-info">
+                    <div class="method-name">VNPay</div>
+                    <div class="method-desc">Thanh toán qua cổng VNPay</div>
+                </div>
+                <div class="method-check"></div>
+            </div>
+
+            <div class="section-label" style="margin-top:16px;">Tài khoản ngân hàng</div>
+            <div class="bank-section" id="bankList"></div>
+            <button class="add-bank-btn" onclick="openModal()">
+                <span>+</span> Liên kết tài khoản ngân hàng
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedMethod = localStorage.getItem('paymentMethod') || 'cash';
+    let banks = JSON.parse(localStorage.getItem('linkedBanks') || '[]');
+
+    function selectMethod(m) {
+        document.querySelectorAll('.method-card').forEach(c => {
+            c.classList.remove('selected');
+            c.querySelector('.method-check').textContent = '';
+        });
+        document.getElementById('method-' + m).classList.add('selected');
+        document.getElementById('method-' + m).querySelector('.method-check').textContent = '✓';
+        selectedMethod = m;
+        localStorage.setItem('paymentMethod', m);
+        showToast('Đã chọn phương thức thanh toán');
+    }
+
+    function renderBanks() {
+        const el = document.getElementById('bankList');
+        if (banks.length === 0) {
+            el.innerHTML = '<div style="padding:12px 0;color:#999;font-size:14px;text-align:center;">Chưa liên kết ngân hàng nào</div>';
+            return;
+        }
+        el.innerHTML = banks.map((b, i) => `
+            <div class="bank-row">
+                <div class="bank-left">
+                    <div class="bank-logo">🏦</div>
+                    <div>
+                        <div class="bank-name">${b.name}</div>
+                        <div class="bank-number">**** ${b.number.slice(-4)} • ${b.owner}</div>
+                    </div>
+                </div>
+                <button class="bank-remove" onclick="removeBank(${i})">✕</button>
+            </div>`).join('');
+    }
+
+    function openModal() { document.getElementById('modalOverlay').classList.add('show'); }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+    function saveBank() {
+        const name = document.getElementById('bankName').value.trim();
+        const number = document.getElementById('bankNumber').value.trim();
+        const owner = document.getElementById('bankOwner').value.trim();
+        if (!name || !number || !owner) { showToast('Vui lòng nhập đầy đủ thông tin'); return; }
+        banks.push({ name, number, owner });
+        localStorage.setItem('linkedBanks', JSON.stringify(banks));
+        closeModal();
+        renderBanks();
+        showToast('Đã liên kết tài khoản ngân hàng');
+        ['bankName','bankNumber','bankOwner'].forEach(id => document.getElementById(id).value = '');
+    }
+
+    function removeBank(i) {
+        if (confirm('Hủy liên kết tài khoản này?')) {
+            banks.splice(i, 1);
+            localStorage.setItem('linkedBanks', JSON.stringify(banks));
+            renderBanks();
+            showToast('Đã hủy liên kết');
+        }
+    }
+
+    function goBack() {
+        document.body.style.transition = 'opacity 0.3s ease';
+        document.body.style.opacity = '0';
+        setTimeout(() => { window.location.href = 'account.html'; }, 300);
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    window.addEventListener('load', () => {
+        // Init không show toast
+        const m = selectedMethod;
+        document.querySelectorAll('.method-card').forEach(c => {
+            c.classList.remove('selected');
+            c.querySelector('.method-check').textContent = '';
+        });
+        const el = document.getElementById('method-' + m);
+        if (el) {
+            el.classList.add('selected');
+            el.querySelector('.method-check').textContent = '✓';
+        }
+        renderBanks();
+    });
+</script>
+</body>
+</html>
