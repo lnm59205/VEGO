@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Lịch sử giao dịch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 32px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .phone-screen::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 600;
+            background: white;
+            z-index: 10;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 4px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #F0F0F0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .header-title {
+            flex: 1;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-right: 36px; /* Balance the back-btn */
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #F5F5F5;
+            padding-bottom: 8px;
+        }
+
+        .order-code {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .order-date {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .material-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .material-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .material-weight {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .order-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #4CAF50; /* Green for cash income */
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .status-badge {
+            background: #E8F8ED;
+            color: #4CAF50;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            text-align: center;
+            color: #999;
+            flex: 1;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            font-size: 13px;
+            color: #999;
+            line-height: 1.5;
+        }
+
+        /* Dynamic Layout Adaptor (Direct vs Iframe vs Mobile) */
+        body.direct-view-desktop {
+            background: #eef2f5 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 100vh !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        
+        body.direct-view-desktop .phone-frame {
+            width: 100% !important;
+            max-width: 450px !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            background: #fff !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08) !important;
+            margin: 0 auto !important;
+            overflow: hidden !important;
+            border: none !important;
+        }
+        
+        body.direct-view-desktop .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        body.iframe-view, body.mobile-view {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #F8F8F8 !important;
+            display: block !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
+        
+        body.iframe-view .phone-frame, body.mobile-view .phone-frame {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            background: none !important;
+            margin: 0 !important;
+            border: none !important;
+            position: relative !important;
+            z-index: 1;
+        }
+        
+        body.iframe-view .phone-screen, body.mobile-view .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        
+        body.iframe-view .phone-frame::before, body.iframe-view .phone-frame::after,
+        body.mobile-view .phone-frame::before, body.mobile-view .phone-frame::after {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="status-icons">
+                    <span>📶</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header">
+                <button class="back-btn" onclick="goBack()">‹</button>
+                <h1 class="header-title">Lịch sử giao dịch</h1>
+            </div>
+
+            <!-- Content -->
+            <div class="content" id="historyContainer">
+                <!-- Data will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                const isProfileFolder = window.location.pathname.includes('/Profile/') || window.location.pathname.includes('/Activity/');
+                window.location.href = isProfileFolder ? '../Profile/account.html' : 'account.html';
+            }, 300);
+        }
+
+        window.onload = function() {
+            const currentUsername = localStorage.getItem('vego_current_user') || 'demo';
+            const allOrdersRaw = JSON.parse(localStorage.getItem('vegoOrders') || '[]');
+            
+            // Filter completed orders for the current user
+            const completedOrders = allOrdersRaw.filter(order => {
+                const isCompleted = order.status === 'completed';
+                if (!isCompleted) return false;
+                
+                if (currentUsername === 'demo') {
+                    return !order.username || order.username === 'demo';
+                } else {
+                    return order.username === currentUsername;
+                }
+            });
+            
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = '';
+            
+            if (completedOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📜</div>
+                        <div class="empty-title">Chưa có giao dịch nào</div>
+                        <div class="empty-desc">Các giao dịch thu gom phế liệu hoàn thành sẽ được hiển thị tại đây.</div>
+                    </div>
+                `;
+            } else {
+                completedOrders.forEach(order => {
+                    const card = document.createElement('div');
+                    card.className = 'history-card';
+                    
+                    const orderDateFormatted = order.date ? order.date.split('-').reverse().join('/') : 'Hôm nay';
+                    
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <span class="order-code">Đơn hàng ${order.id}</span>
+                            <span class="order-date">${orderDateFormatted}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="material-info">
+                                <span class="material-name">${order.wasteType}</span>
+                                <span class="material-weight">${order.weight} kg</span>
+                            </div>
+                            <span class="order-value">+${order.estimatedValue.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        <div class="card-footer">
+                            <span class="location-info">📍 ${order.address}</span>
+                            <span class="status-badge">Đã hoàn tất</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        };
+    </script>
+
+    <!-- Script to dynamically adapt layout (Direct View vs Iframe View vs Mobile View) -->
+    <script>
+    (function() {
+        function adaptLayout() {
+            const isIframe = window.self !== window.top;
+            const isMobile = window.innerWidth <= 768;
+            
+            document.body.classList.remove('direct-view-desktop', 'iframe-view', 'mobile-view');
+            
+            if (isIframe) {
+                document.body.classList.add('iframe-view');
+            } else if (isMobile) {
+                document.body.classList.add('mobile-view');
+            } else {
+                document.body.classList.add('direct-view-desktop');
+            }
+        }
+        
+        window.addEventListener('DOMContentLoaded', adaptLayout);
+        window.addEventListener('resize', adaptLayout);
+        adaptLayout();
+    })();
+    </script>
+</body>
+</html>

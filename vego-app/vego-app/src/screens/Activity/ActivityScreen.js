@@ -7,8 +7,8 @@ export default function ActivityScreen() {
     {
       id: 1,
       type: 'purchase',
-      title: 'Mua rau cải xanh',
-      description: 'Đã mua 2kg rau cải xanh từ nông trại ABC',
+      title: 'Bán chai nhựa & sắt vụn',
+      description: 'Đã bán thành công 2kg chai nhựa và sắt vụn',
       time: '2 giờ trước',
       amount: '45.000đ',
     },

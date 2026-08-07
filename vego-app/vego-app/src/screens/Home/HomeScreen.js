@@ -11,7 +11,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Vego - Rau sạch gần bạn</Text>
+        <Text style={styles.title}>Vego - Thu gom phế liệu gần bạn</Text>
       </View>
       
       <View style={styles.mapContainer}>

@@ -116,7 +116,97 @@
             border-top: 2px solid #75FF93;
             font-size: 15px; font-weight: 700; color: #333;
         }
-    </style>
+        
+        .method-option.disabled {
+            opacity: 0.55;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            border-color: #E2E8F0 !important;
+            background: #F8FAFC !important;
+        }
+        .method-option.disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+    
+        /* Dynamic Layout Adaptor (Direct vs Iframe vs Mobile) */
+        body.direct-view-desktop {
+            background: #eef2f5 !important; /* Premium neutral background */
+            padding: 0 !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 100vh !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        
+        body.direct-view-desktop .phone-frame {
+            width: 100% !important;
+            max-width: 450px !important; /* Perfect mobile width on desktop direct view */
+            height: 100vh !important;
+            min-height: 100vh !important;
+            background: #fff !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08) !important; /* Nice sidebar shadow */
+            margin: 0 auto !important;
+            overflow: hidden !important;
+            border: none !important;
+            transform: none !important; /* Override original scale */
+        }
+        
+        body.direct-view-desktop .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* If loaded inside iframe or on real mobile phone */
+        body.iframe-view, body.mobile-view {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #F8F8F8 !important;
+            display: block !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
+        
+        body.iframe-view .phone-frame, body.mobile-view .phone-frame {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            background: none !important;
+            margin: 0 !important;
+            border: none !important;
+            position: relative !important;
+            transform: none !important; /* Override original scale */
+        }
+        
+        body.iframe-view .phone-screen, body.mobile-view .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        
+        /* Hide simulated notch/camera/indicator inside screen */
+        body.iframe-view .phone-frame::before, body.iframe-view .phone-frame::after,
+        body.mobile-view .phone-frame::before, body.mobile-view .phone-frame::after {
+            display: none !important;
+        }
+</style>
 </head>
 <body>
     <div class="phone-frame">
@@ -158,7 +248,7 @@
                     <div class="method-icon">🚛</div>
                     <div class="method-info">
                         <div class="method-name">Thu gom tận nơi</div>
-                        <div class="method-desc">Nhân viên sẽ đến cửa và thu mua</div>
+                        <div class="method-desc" id="pickupDesc">Nhân viên sẽ đến cửa và thu mua</div>
                     </div>
                 </div>
 
@@ -184,6 +274,8 @@
             document.getElementById('materialSummary').style.display = 'block';
             const source = estimateData.source;
 
+            let totalWeight = 0;
+
             if (source === 'camera') {
                 const m = estimateData.materials[0];
                 document.getElementById('summaryLabel').textContent = 'Phế liệu đã quét';
@@ -191,6 +283,7 @@
                 document.getElementById('summaryMaterial').textContent = `${m.name} - ${m.weight}kg`;
                 document.getElementById('summaryPrice').textContent = m.total.toLocaleString('vi-VN') + 'đ';
                 document.getElementById('materialRows').innerHTML = '';
+                totalWeight = parseFloat(m.weight) || 0;
             } else {
                 const total = estimateData.total;
                 const count = estimateData.materials.length;
@@ -206,6 +299,7 @@
                             <span class="material-row-name">${m.name} — ${m.weight}kg</span>
                             <span class="material-row-price">${m.total.toLocaleString('vi-VN')}đ</span>
                         </div>`;
+                    totalWeight += parseFloat(m.weight) || 0;
                 });
                 rowsHtml += `
                     <div class="summary-total-row">
@@ -213,6 +307,38 @@
                         <span>${total.toLocaleString('vi-VN')}đ</span>
                     </div>`;
                 document.getElementById('materialRows').innerHTML = rowsHtml;
+            }
+
+            // Enforce minimum 10kg weight limit for home collection
+            if (totalWeight < 10) {
+                // Disable pickup option
+                const pickupOption = document.getElementById('method2');
+                pickupOption.classList.remove('selected');
+                pickupOption.classList.add('disabled');
+                document.getElementById('pickupDesc').innerHTML = '<span style="color: #ef4444; font-weight: 600;">(Yêu cầu tối thiểu 10kg để thu gom tận nơi)</span>';
+                
+                // Force select station option
+                selectMethod('station');
+                
+                // Update info box style and text
+                const infoBox = document.querySelector('.info-box');
+                if (infoBox) {
+                    infoBox.style.background = '#fef2f2';
+                    const infoIcon = document.querySelector('.info-icon');
+                    if (infoIcon) infoIcon.style.background = '#ef4444';
+                    const infoText = document.querySelector('.info-text');
+                    if (infoText) {
+                        infoText.style.color = '#b91c1c';
+                        infoText.innerHTML = `Số lượng phế liệu ước tính là <strong>${totalWeight}kg</strong> (chưa đủ 10kg). Trạm chỉ hỗ trợ phương thức <strong>"Mang đến trạm"</strong>. Vui lòng gom thêm phế liệu để được thu gom tận nơi!`;
+                    }
+                }
+            } else {
+                // Enabled, default select pickup
+                selectMethod('pickup');
+                const infoText = document.querySelector('.info-text');
+                if (infoText) {
+                    infoText.innerHTML = `Số lượng phế liệu ước tính là <strong>${totalWeight}kg</strong> (đủ điều kiện thu gom tận nơi). Nhân viên VeGo sẽ đến tận nơi thu gom miễn phí cho bạn!`;
+                }
             }
         };
 
@@ -238,6 +364,32 @@
             document.body.style.opacity = '0';
             setTimeout(() => { window.location.href = 'transaction-success.html'; }, 300);
         }
+    </script>
+
+    <!-- Script to dynamically adapt layout (Direct View vs Iframe View vs Mobile View) -->
+    <script>
+    (function() {
+        function adaptLayout() {
+            const isIframe = window.self !== window.top;
+            const isMobile = window.innerWidth <= 768;
+            
+            // Clear any previously set view classes
+            document.body.classList.remove('direct-view-desktop', 'iframe-view', 'mobile-view');
+            
+            if (isIframe) {
+                document.body.classList.add('iframe-view');
+            } else if (isMobile) {
+                document.body.classList.add('mobile-view');
+            } else {
+                document.body.classList.add('direct-view-desktop');
+            }
+        }
+        
+        // Run on load and resize
+        window.addEventListener('DOMContentLoaded', adaptLayout);
+        window.addEventListener('resize', adaptLayout);
+        adaptLayout(); // run immediately
+    })();
     </script>
 </body>
 </html>

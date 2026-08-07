@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo App - Demo Prototype</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0f172a;
+            background-image: radial-gradient(at 0% 0%, rgba(30, 41, 59, 0.5) 0, transparent 50%), radial-gradient(at 50% 0%, rgba(74, 222, 128, 0.08) 0, transparent 50%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        .desktop-layout {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            max-width: 1100px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            gap: 50px;
+        }
+        
+        .sidebar-panel {
+            flex: 1;
+            max-width: 420px;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(94, 234, 142, 0.3);
+        }
+        
+        .brand-header h2 {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            margin: 0;
+        }
+        
+        .brand-header .badge {
+            background: rgba(74, 222, 128, 0.12);
+            color: #4ade80;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid rgba(74, 222, 128, 0.15);
+        }
+        
+        .brand-desc {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .screen-navigator {
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .screen-navigator h4 {
+            margin-bottom: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+        }
+        
+        .nav-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .nav-links::-webkit-scrollbar {
+            width: 4px;
+        }
+        .nav-links::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-item.active {
+            background: #2e7d32;
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+            border-color: #2e7d32;
+        }
+        
+        .brand-footer {
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+        
+        .simulator-panel {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Realistic iPhone 14 Pro CSS Mockup Frame */
+        .phone-frame {
+            width: 390px;
+            height: 800px;
+            min-height: 800px;
+            background: #1c1c1e;
+            border-radius: 54px;
+            padding: 12px;
+            box-shadow: 
+                0 0 0 4px #2c2c35,
+                0 25px 60px rgba(0,0,0,0.6);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #2d2d35;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 42px;
+            background: #F8F8F8;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        }
+        
+        .phone-screen iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 42px;
+            background: #F8F8F8;
+        }
+        
+        .dynamic-island {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 28px;
+            background: #000;
+            border-radius: 20px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 134px;
+            height: 5px;
+            background: #000;
+            border-radius: 3px;
+            z-index: 999;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        
+        /* Mobile adjustment */
+        @media (max-width: 768px) {
+            .desktop-layout {
+                padding: 0;
+            }
+            .sidebar-panel {
+                display: none !important;
+            }
+            .phone-frame {
+                width: 100vw;
+                height: 100vh;
+                min-height: 100vh;
+                border-radius: 0;
+                padding: 0;
+                box-shadow: none;
+                border: none;
+                background: none;
+            }
+            .phone-screen, .phone-screen iframe {
+                border-radius: 0;
+            }
+            .dynamic-island, .home-indicator {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop-layout">
+        <div class="sidebar-panel">
+            <div class="brand-header">
+                <img src="../../assets/images/logo.png" class="brand-logo" alt="VeGo" onerror="this.src='https://i.imgur.com/5ee87a.png';">
+                <h2>VeGo App</h2>
+                <span class="badge">Interactive Demo</span>
+            </div>
+            <p class="brand-desc">Chào mừng bạn đến với mô hình mô phỏng tương tác của <strong>VeGo - Ve Chai Công Nghệ</strong>. Hãy nhấn các nút trên màn hình điện thoại bên phải để trải nghiệm luồng thao tác thực tế.</p>
+            
+            <div class="screen-navigator">
+                <h4>Danh sách màn hình:</h4>
+                <div class="nav-links">
+                    <a href="Activity/activity.html" target="demo-iframe" class="nav-item ">📱 Hoạt động gần đây</a>
+                    <a href="Activity/order-detail.html" target="demo-iframe" class="nav-item ">📦 Chi tiết đơn hàng</a>
+                    <a href="Activity/transaction-history.html" target="demo-iframe" class="nav-item ">📜 Lịch sử giao dịch</a>
+                    <a href="Auth/email-login.html" target="demo-iframe" class="nav-item ">📧 Đăng nhập Email</a>
+                    <a href="Auth/register-preview.html" target="demo-iframe" class="nav-item ">📝 Đăng ký</a>
+                    <a href="Auth/splash-preview.html" target="demo-iframe" class="nav-item active">🎬 Splash Screen</a>
+                    <a href="Auth/welcome-screen.html" target="demo-iframe" class="nav-item ">👋 Màn hình chào</a>
+                    <a href="Camera/ScanMaterial.html" target="demo-iframe" class="nav-item ">📷 Quét phế liệu (Camera)</a>
+                    <a href="Home/chat.html" target="demo-iframe" class="nav-item ">💬 Tin nhắn & Chat</a>
+                    <a href="Home/choose-method.html" target="demo-iframe" class="nav-item ">🛠️ Chọn phương thức</a>
+                    <a href="Home/home-map.html" target="demo-iframe" class="nav-item ">🗺️ Bản đồ & Trang chủ</a>
+                    <a href="Home/location-detail.html" target="demo-iframe" class="nav-item ">🏪 Chi tiết điểm bán</a>
+                    <a href="Home/messages.html" target="demo-iframe" class="nav-item ">💬 Tin nhắn chung</a>
+                    <a href="Home/transaction-success.html" target="demo-iframe" class="nav-item ">✅ Giao dịch xong</a>
+                    <a href="Profile/account.html" target="demo-iframe" class="nav-item ">👤 Tài khoản</a>
+                    <a href="Profile/payment-methods.html" target="demo-iframe" class="nav-item ">💳 Phương thức thanh toán</a>
+                    <a href="Profile/personal-info.html" target="demo-iframe" class="nav-item ">👤 Thông tin cá nhân</a>
+                    <a href="Profile/saved-addresses.html" target="demo-iframe" class="nav-item ">📍 Địa chỉ đã lưu</a>
+                    <a href="Profile/support.html" target="demo-iframe" class="nav-item ">📞 Hỗ trợ khách hàng</a>
+                    <a href="Rewards/RewardsScreen.html" target="demo-iframe" class="nav-item ">🎁 Ưu đãi & Quà tặng</a>
+                    <a href="Rewards/VoucherDetail.html" target="demo-iframe" class="nav-item ">🏷️ Chi tiết Voucher</a>
+                    <a href="../../adminvego/dashboard.html" target="_blank" class="nav-item" style="grid-column: span 2; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important; color: white !important; font-weight: 700; text-align: center; justify-content: center; padding: 10px; margin-top: 8px; border-radius: 10px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); border: 1px solid rgba(255,255,255,0.05);">📊 MASTER ADMIN PANEL</a>
+                    <a href="../../hubvego/login.html" target="_blank" class="nav-item" style="grid-column: span 2; background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: white !important; font-weight: 700; text-align: center; justify-content: center; padding: 10px; margin-top: 4px; border-radius: 10px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">🏪 HUB PARTNER PORTAL</a>
+                </div>
+            </div>
+            
+            <div class="brand-footer">
+                <p>💡 <strong>Hướng dẫn:</strong> Bạn có thể nhấn trực tiếp vào các nút bấm hiển thị bên trong điện thoại để xem luồng chuyển trang mượt mà như app thật.</p>
+            </div>
+        </div>
+        
+        <div class="simulator-panel">
+            <div class="phone-frame">
+                <div class="dynamic-island"></div>
+                <div class="phone-screen">
+                    <iframe id="demo-iframe" name="demo-iframe" src="Auth/splash-preview.html"></iframe>
+                </div>
+                <div class="home-indicator"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Listen for iframe loading changes to keep the active menu item in sync
+        const iframe = document.getElementById('demo-iframe');
+        iframe.addEventListener('load', function() {
+            try {
+                // Get path relative to /screens/
+                const fullPath = iframe.contentWindow.location.pathname;
+                const pathParts = fullPath.split('/screens/');
+                if (pathParts.length > 1) {
+                    const relativePath = pathParts[1];
+                    const items = document.querySelectorAll('.nav-item');
+                    items.forEach(item => {
+                        const hrefAttr = item.getAttribute('href');
+                        if (hrefAttr && hrefAttr.includes(relativePath)) {
+                            items.forEach(i => i.classList.remove('active'));
+                            item.classList.add('active');
+                        }
+                    });
+                }
+            } catch (e) {
+                // cross-origin safety
+            }
+        });
+    </script>
+</body>
+</html>

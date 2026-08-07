@@ -365,7 +365,85 @@
         @media (max-width: 480px) {
             body { padding: 10px; }
         }
-    </style>
+    
+        /* Dynamic Layout Adaptor (Direct vs Iframe vs Mobile) */
+        body.direct-view-desktop {
+            background: #eef2f5 !important; /* Premium neutral background */
+            padding: 0 !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 100vh !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        
+        body.direct-view-desktop .phone-frame {
+            width: 100% !important;
+            max-width: 450px !important; /* Perfect mobile width on desktop direct view */
+            height: 100vh !important;
+            min-height: 100vh !important;
+            background: #fff !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08) !important; /* Nice sidebar shadow */
+            margin: 0 auto !important;
+            overflow: hidden !important;
+            border: none !important;
+            transform: none !important; /* Override original scale */
+        }
+        
+        body.direct-view-desktop .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* If loaded inside iframe or on real mobile phone */
+        body.iframe-view, body.mobile-view {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #F8F8F8 !important;
+            display: block !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
+        
+        body.iframe-view .phone-frame, body.mobile-view .phone-frame {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            background: none !important;
+            margin: 0 !important;
+            border: none !important;
+            position: relative !important;
+            transform: none !important; /* Override original scale */
+        }
+        
+        body.iframe-view .phone-screen, body.mobile-view .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        
+        /* Hide simulated notch/camera/indicator inside screen */
+        body.iframe-view .phone-frame::before, body.iframe-view .phone-frame::after,
+        body.mobile-view .phone-frame::before, body.mobile-view .phone-frame::after {
+            display: none !important;
+        }
+</style>
 </head>
 <body>
     <div class="phone-frame">
@@ -479,9 +557,7 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             
-            // Clear previous errors
             clearErrors();
-            
             let hasError = false;
             
             if (!username) {
@@ -492,24 +568,43 @@
             if (!password) {
                 showError('password', 'Vui lòng nhập mật khẩu!');
                 hasError = true;
-            } else if (password.length < 6) {
-                showError('password', 'Mật khẩu phải có ít nhất 6 ký tự!');
-                hasError = true;
             }
             
             if (hasError) {
                 return;
             }
             
-            // Simulate login
+            // Load and validate from localStorage
+            const users = JSON.parse(localStorage.getItem('vego_users') || '[]');
+            // Default demo account
+            if (users.length === 0 || !users.some(u => u.username === 'demo')) {
+                users.push({ username: 'demo', password: '123', fullName: 'Demo User', phone: '0901234567' });
+                localStorage.setItem('vego_users', JSON.stringify(users));
+            }
+            
+            const matchedUser = users.find(u => u.username === username && u.password === password);
+            if (!matchedUser) {
+                showError('username', 'Tài khoản hoặc mật khẩu không chính xác!');
+                showError('password', 'Tài khoản hoặc mật khẩu không chính xác!');
+                return;
+            }
+            
+            // Set current session
+            localStorage.setItem('vego_current_user', username);
+            localStorage.setItem('userName', matchedUser.fullName || username);
+            localStorage.setItem('userPhone', matchedUser.phone || '0901234567');
+            localStorage.setItem('vePoints', username === 'demo' ? '1250' : '0');
+            localStorage.setItem('userPoints', username === 'demo' ? '1250' : '0');
+            
             const button = document.getElementById('loginBtn');
             button.textContent = 'Đang đăng nhập...';
             button.disabled = true;
             
             setTimeout(() => {
-                // Chuyển hướng đến trang home với bản đồ
-                window.location.href = '../Home/home-map.html';
-            }, 1500);
+                // Determine redirect path dynamically based on folder structure
+                const isNested = window.location.pathname.includes('vego-app/vego-app');
+                window.location.href = isNested ? '../Home/home-map.html' : 'home-map.html';
+            }, 1000);
         }
 
         function showError(fieldId, message) {
@@ -569,6 +664,32 @@
                 handleLogin();
             }
         });
+    </script>
+
+    <!-- Script to dynamically adapt layout (Direct View vs Iframe View vs Mobile View) -->
+    <script>
+    (function() {
+        function adaptLayout() {
+            const isIframe = window.self !== window.top;
+            const isMobile = window.innerWidth <= 768;
+            
+            // Clear any previously set view classes
+            document.body.classList.remove('direct-view-desktop', 'iframe-view', 'mobile-view');
+            
+            if (isIframe) {
+                document.body.classList.add('iframe-view');
+            } else if (isMobile) {
+                document.body.classList.add('mobile-view');
+            } else {
+                document.body.classList.add('direct-view-desktop');
+            }
+        }
+        
+        // Run on load and resize
+        window.addEventListener('DOMContentLoaded', adaptLayout);
+        window.addEventListener('resize', adaptLayout);
+        adaptLayout(); // run immediately
+    })();
     </script>
 </body>
 </html>

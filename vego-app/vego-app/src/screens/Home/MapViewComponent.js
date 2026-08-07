@@ -9,7 +9,7 @@ export default function MapViewComponent() {
   return (
     <View style={styles.container}>
       <Text style={styles.placeholder}>
-        🗺️ Bản đồ hiển thị các điểm bán rau sạch gần bạn
+        🗺️ Bản đồ hiển thị các điểm thu gom phế liệu gần bạn
       </Text>
       <Text style={styles.note}>
         (Cần cài đặt react-native-maps để hiển thị bản đồ thực tế)
@@ -31,8 +31,8 @@ export default function MapViewComponent() {
     >
       <Marker
         coordinate={{ latitude: 10.8231, longitude: 106.6297 }}
-        title="Rau sạch ABC"
-        description="Rau củ quả tươi ngon"
+        title="Vựa ve chai Hà Đông"
+        description="Thu mua phế liệu, chai nhựa, lon nhôm"
       />
     </MapView>
   );

@@ -350,7 +350,85 @@
         .support-link:hover {
             text-decoration: underline;
         }
-    </style>
+    
+        /* Dynamic Layout Adaptor (Direct vs Iframe vs Mobile) */
+        body.direct-view-desktop {
+            background: #eef2f5 !important; /* Premium neutral background */
+            padding: 0 !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 100vh !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        
+        body.direct-view-desktop .phone-frame {
+            width: 100% !important;
+            max-width: 450px !important; /* Perfect mobile width on desktop direct view */
+            height: 100vh !important;
+            min-height: 100vh !important;
+            background: #fff !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08) !important; /* Nice sidebar shadow */
+            margin: 0 auto !important;
+            overflow: hidden !important;
+            border: none !important;
+            transform: none !important; /* Override original scale */
+        }
+        
+        body.direct-view-desktop .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* If loaded inside iframe or on real mobile phone */
+        body.iframe-view, body.mobile-view {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #F8F8F8 !important;
+            display: block !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
+        
+        body.iframe-view .phone-frame, body.mobile-view .phone-frame {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            background: none !important;
+            margin: 0 !important;
+            border: none !important;
+            position: relative !important;
+            transform: none !important; /* Override original scale */
+        }
+        
+        body.iframe-view .phone-screen, body.mobile-view .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        
+        /* Hide simulated notch/camera/indicator inside screen */
+        body.iframe-view .phone-frame::before, body.iframe-view .phone-frame::after,
+        body.mobile-view .phone-frame::before, body.mobile-view .phone-frame::after {
+            display: none !important;
+        }
+</style>
 </head>
 <body>
     <div class="phone-frame">
@@ -375,8 +453,8 @@
                 </div>
 
                 <!-- Title -->
-                <h1 class="title">Giao dịch đã được duyệt!</h1>
-                <p class="subtitle">Cảm ơn bạn đã góp phần bảo vệ môi trường</p>
+                <h1 class="title">Đơn hàng đang chờ duyệt!</h1>
+                <p class="subtitle">Yêu cầu thu gom của bạn đang được hệ thống xử lý</p>
 
                 <!-- Summary Card -->
                 <div class="summary-card">
@@ -520,29 +598,48 @@
                 document.getElementById('methodType').textContent = methodText;
             }
 
-            // Save new order to sessionStorage for activity page
+            // Save new order to localStorage vegoOrders and sessionStorage
+            const orderId = 'VG' + Math.floor(Math.random() * 90000 + 10000);
+            const currentUsername = localStorage.getItem('vego_current_user') || 'demo';
+            const customer = localStorage.getItem('userName') || currentUsername;
+            const phone = localStorage.getItem('userPhone') || '0901234567';
+            
+            const materials = estimateData.materials || [];
+            const wasteType = materials.map(m => m.name).join(', ') || 'Phế liệu';
+            const weight = materials.reduce((sum, m) => sum + (m.weight || 0), 0) || 5.0;
+            const address = estimateData.location?.address || 'Tại nhà';
+            
             const newOrder = {
-                id: 'order-' + Date.now(),
-                locationName: estimateData.location?.title || 'Vựa ve chai',
-                locationAddress: estimateData.location?.address || 'Tại nhà',
-                materials: estimateData.materials || [],
-                total: estimateData.total || 0,
+                id: orderId,
+                customer: customer,
+                username: currentUsername, // link to session
+                phone: phone,
+                wasteType: wasteType,
+                weight: weight,
+                address: address,
+                estimatedValue: estimateData.total || 0,
+                status: 'pending', // matches pending state in admin panel
+                date: new Date().toISOString().split('T')[0],
                 method: selectedMethod === 'station' ? 'Mang đến trạm' : 'Thu gom tận nơi',
-                status: 'approved',
+                timestamp: Date.now(),
+                orderCode: '#VG-' + Math.floor(Math.random() * 10000000),
+                materials: materials,
+                locationName: estimateData.location?.title || 'Vựa ve chai',
+                locationAddress: address,
+                total: estimateData.total || 0,
                 statusText: 'Đang duyệt',
                 statusClass: 'status-approved',
-                statusIcon: '⚡',
-                timestamp: Date.now(),
-                orderCode: '#VG-' + Math.floor(Math.random() * 10000000)
+                statusIcon: '⚡'
             };
             
-            // Get existing orders or create new array
+            // Save to global vegoOrders (localStorage) for adminvego panel
+            let vegoOrders = JSON.parse(localStorage.getItem('vegoOrders') || '[]');
+            vegoOrders.unshift(newOrder);
+            localStorage.setItem('vegoOrders', JSON.stringify(vegoOrders));
+            
+            // Also keep sessionStorage synced for activity back-compatibility
             let allOrders = JSON.parse(sessionStorage.getItem('allOrders') || '[]');
-            
-            // Add new order to the beginning
             allOrders.unshift(newOrder);
-            
-            // Save back to sessionStorage
             sessionStorage.setItem('allOrders', JSON.stringify(allOrders));
         };
 
@@ -565,6 +662,32 @@
                 window.location.href = 'home-map.html';
             }, 300);
         }
+    </script>
+
+    <!-- Script to dynamically adapt layout (Direct View vs Iframe View vs Mobile View) -->
+    <script>
+    (function() {
+        function adaptLayout() {
+            const isIframe = window.self !== window.top;
+            const isMobile = window.innerWidth <= 768;
+            
+            // Clear any previously set view classes
+            document.body.classList.remove('direct-view-desktop', 'iframe-view', 'mobile-view');
+            
+            if (isIframe) {
+                document.body.classList.add('iframe-view');
+            } else if (isMobile) {
+                document.body.classList.add('mobile-view');
+            } else {
+                document.body.classList.add('direct-view-desktop');
+            }
+        }
+        
+        // Run on load and resize
+        window.addEventListener('DOMContentLoaded', adaptLayout);
+        window.addEventListener('resize', adaptLayout);
+        adaptLayout(); // run immediately
+    })();
     </script>
 </body>
 </html>

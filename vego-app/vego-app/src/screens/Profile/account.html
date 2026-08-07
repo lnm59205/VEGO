@@ -401,7 +401,85 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
-    </style>
+    
+        /* Dynamic Layout Adaptor (Direct vs Iframe vs Mobile) */
+        body.direct-view-desktop {
+            background: #eef2f5 !important; /* Premium neutral background */
+            padding: 0 !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 100vh !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        
+        body.direct-view-desktop .phone-frame {
+            width: 100% !important;
+            max-width: 450px !important; /* Perfect mobile width on desktop direct view */
+            height: 100vh !important;
+            min-height: 100vh !important;
+            background: #fff !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08) !important; /* Nice sidebar shadow */
+            margin: 0 auto !important;
+            overflow: hidden !important;
+            border: none !important;
+            transform: none !important; /* Override original scale */
+        }
+        
+        body.direct-view-desktop .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* If loaded inside iframe or on real mobile phone */
+        body.iframe-view, body.mobile-view {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #F8F8F8 !important;
+            display: block !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
+        
+        body.iframe-view .phone-frame, body.mobile-view .phone-frame {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            background: none !important;
+            margin: 0 !important;
+            border: none !important;
+            position: relative !important;
+            transform: none !important; /* Override original scale */
+        }
+        
+        body.iframe-view .phone-screen, body.mobile-view .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        
+        /* Hide simulated notch/camera/indicator inside screen */
+        body.iframe-view .phone-frame::before, body.iframe-view .phone-frame::after,
+        body.mobile-view .phone-frame::before, body.mobile-view .phone-frame::after {
+            display: none !important;
+        }
+</style>
 </head>
 <body>
     <!-- Toast -->
@@ -573,12 +651,23 @@
 
         // Menu navigation
         function navigateTo(page) {
+            const isProfileFolder = window.location.pathname.includes('/Profile/');
+            const isNested = window.location.pathname.includes('vego-app/vego-app');
+            
+            // Set history path dynamically
+            let historyPath = 'transaction-history.html';
+            if (isProfileFolder) {
+                historyPath = '../Activity/transaction-history.html';
+            } else if (isNested) {
+                historyPath = 'transaction-history.html';
+            }
+            
             const pages = {
-                'personal-info': '../Profile/personal-info.html',
-                'saved-addresses': '../Profile/saved-addresses.html',
-                'payment-methods': '../Profile/payment-methods.html',
-                'history': '../Activity/activity.html?tab=completed',
-                'support': '../Profile/support.html'
+                'personal-info': isProfileFolder ? 'personal-info.html' : '../Profile/personal-info.html',
+                'saved-addresses': isProfileFolder ? 'saved-addresses.html' : '../Profile/saved-addresses.html',
+                'payment-methods': isProfileFolder ? 'payment-methods.html' : '../Profile/payment-methods.html',
+                'history': historyPath,
+                'support': isProfileFolder ? '../Profile/support.html' : 'chat.html'
             };
             
             if (pages[page]) {
@@ -596,12 +685,15 @@
             if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
                 showToast('Đang đăng xuất...');
                 
+                localStorage.removeItem('vego_current_user');
+                
                 setTimeout(() => {
                     document.body.style.transition = 'opacity 0.3s ease';
                     document.body.style.opacity = '0';
                     
                     setTimeout(() => {
-                        window.location.href = '../Auth/login-preview.html';
+                        const isProfileFolder = window.location.pathname.includes('/Profile/');
+                        window.location.href = isProfileFolder ? '../Auth/login-preview.html' : 'login-preview.html';
                     }, 300);
                 }, 1000);
             }
@@ -664,6 +756,32 @@
             const savedPoints = sessionStorage.getItem('userPoints') || '2000';
             document.getElementById('pointsAmount').textContent = parseInt(savedPoints).toLocaleString('vi-VN');
         });
+    </script>
+
+    <!-- Script to dynamically adapt layout (Direct View vs Iframe View vs Mobile View) -->
+    <script>
+    (function() {
+        function adaptLayout() {
+            const isIframe = window.self !== window.top;
+            const isMobile = window.innerWidth <= 768;
+            
+            // Clear any previously set view classes
+            document.body.classList.remove('direct-view-desktop', 'iframe-view', 'mobile-view');
+            
+            if (isIframe) {
+                document.body.classList.add('iframe-view');
+            } else if (isMobile) {
+                document.body.classList.add('mobile-view');
+            } else {
+                document.body.classList.add('direct-view-desktop');
+            }
+        }
+        
+        // Run on load and resize
+        window.addEventListener('DOMContentLoaded', adaptLayout);
+        window.addEventListener('resize', adaptLayout);
+        adaptLayout(); // run immediately
+    })();
     </script>
 </body>
 </html>

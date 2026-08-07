@@ -15,25 +15,10 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f4f6f9;
             min-height: 100vh;
             color: #333;
             overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.08) 0%, transparent 50%);
-            animation: backgroundFloat 20s ease-in-out infinite;
-            z-index: -1;
         }
 
         @keyframes backgroundFloat {
@@ -6394,6 +6379,48 @@
         let selectedCustomers = new Set();
 
         function loadUsersData() {
+            // Load registered users from vego_users in localStorage
+            const localUsers = JSON.parse(localStorage.getItem('vego_users') || '[]');
+            
+            localUsers.forEach(user => {
+                const userKey = 'USER_' + user.username;
+                // Avoid duplication in customersData array
+                if (!customersData.some(c => c.id === userKey || c.username === user.username)) {
+                    // Calculate real statistics from vegoOrders in localStorage
+                    const vegoOrders = JSON.parse(localStorage.getItem('vegoOrders') || '[]');
+                    const userOrders = vegoOrders.filter(o => o.username === user.username);
+                    const totalRevenue = userOrders.reduce((sum, o) => sum + (o.estimatedValue || 0), 0);
+                    
+                    customersData.push({
+                        id: userKey,
+                        username: user.username,
+                        name: user.fullName || user.username,
+                        type: 'seller',
+                        phone: user.phone || '0901234567',
+                        email: user.username + '@vego-app.com',
+                        address: 'Người dùng ứng dụng di động',
+                        area: 'q1',
+                        orders: userOrders.length,
+                        revenue: totalRevenue,
+                        rating: 5.0,
+                        status: 'active',
+                        joinDate: new Date().toISOString().split('T')[0]
+                    });
+                }
+            });
+
+            // Update statistics for existing user customers in case of new orders
+            customersData.forEach(c => {
+                if (typeof c.id === 'string' && c.id.startsWith('USER_')) {
+                    const username = c.username;
+                    const vegoOrders = JSON.parse(localStorage.getItem('vegoOrders') || '[]');
+                    const userOrders = vegoOrders.filter(o => o.username === username);
+                    c.orders = userOrders.length;
+                    c.revenue = userOrders.reduce((sum, o) => sum + (o.estimatedValue || 0), 0);
+                }
+            });
+
+            filteredCustomers = [...customersData];
             renderCustomerStats();
             renderCustomersTable();
         }

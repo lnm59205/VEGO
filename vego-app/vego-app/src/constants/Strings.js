@@ -1,7 +1,7 @@
 export const Strings = {
   // App name
   appName: 'Vego',
-  appSlogan: 'Rau sạch gần bạn',
+  appSlogan: 'Thu gom phế liệu gần bạn',
   
   // Navigation
   tabHome: 'Trang chủ',
@@ -37,7 +37,7 @@ export const Strings = {
   
   // Home
   sellNow: 'Bán ngay',
-  nearbyVegetables: 'Rau sạch gần bạn',
+  nearbyVegetables: 'Thu gom phế liệu gần bạn',
   
   // Activity
   recentActivity: 'Hoạt động gần đây',

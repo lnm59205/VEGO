@@ -5,7 +5,7 @@ export default function ForumScreen() {
   const forumPosts = [
     {
       id: 1,
-      title: 'Kinh nghiệm trồng rau sạch tại nhà',
+      title: 'Kinh nghiệm phân loại phế liệu tại nhà',
       author: 'Nguyễn Văn A',
       time: '2 giờ trước',
       replies: 15,
@@ -13,7 +13,7 @@ export default function ForumScreen() {
     },
     {
       id: 2,
-      title: 'Cách bảo quản rau củ tươi lâu',
+      title: 'Cách phân loại phế liệu tái chế tại nhà',
       author: 'Trần Thị B',
       time: '5 giờ trước',
       replies: 8,
@@ -21,7 +21,7 @@ export default function ForumScreen() {
     },
     {
       id: 3,
-      title: 'Chia sẻ nguồn rau sạch giá tốt',
+      title: 'Chia sẻ địa điểm thu mua phế liệu giá cao',
       author: 'Lê Văn C',
       time: '1 ngày trước',
       replies: 25,

@@ -28,9 +28,9 @@ export default function RewardsScreen() {
     },
     {
       id: 4,
-      title: 'Rau sạch premium miễn phí',
+      title: 'Túi canvas tái chế thân thiện môi trường',
       points: 1000,
-      description: '1kg rau sạch cao cấp miễn phí',
+      description: 'Tặng túi vải canvas tái chế chất lượng cao',
       available: true,
     },
     {

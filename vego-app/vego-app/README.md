@@ -1,6 +1,6 @@
-# Vego App - Ứng dụng Rau sạch
+# Vego App - Ứng dụng Thu gom phế liệu công nghệ
 
-Ứng dụng React Native cho việc mua bán rau sạch với các tính năng bản đồ, diễn đàn, và hệ thống điểm thưởng.
+Ứng dụng React Native cho việc thu gom phế liệu công nghệ với các tính năng bản đồ, diễn đàn, và hệ thống điểm thưởng.
 
 ## Cấu trúc thư mục
 
@@ -49,7 +49,7 @@ vego-app/
 ## Tính năng chính
 
 ### 🏠 Trang chủ (Home)
-- Hiển thị bản đồ các điểm bán rau sạch gần bạn
+- Hiển thị bản đồ các điểm thu gom phế liệu gần bạn
 - Nút "Bán ngay" để đăng bán sản phẩm nhanh chóng
 
 ### 📱 Hoạt động (Activity)
@@ -58,8 +58,8 @@ vego-app/
 - Thống kê điểm thưởng
 
 ### 💬 Diễn đàn (Forum)
-- Chia sẻ kinh nghiệm trồng rau
-- Thảo luận về rau sạch
+- Chia sẻ kinh nghiệm phân loại rác thải
+- Thảo luận về bảo vệ môi trường
 - Tạo bài viết mới
 
 ### 🎁 Ưu đãi (Rewards)
