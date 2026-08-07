@@ -1,0 +1,669 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Tài khoản cá nhân</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            position: relative;
+            transform: scale(0.8);
+            transform-origin: center center;
+            flex-shrink: 0;
+            margin: -81px 0;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #F8F8F8;
+            border-radius: 32px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .phone-screen::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 50px 20px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-button {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .placeholder {
+            width: 36px;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding-bottom: 90px;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            background: white;
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .avatar-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #81D4FA 0%, #4FC3F7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .verified-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .user-phone {
+            font-size: 13px;
+            color: #999;
+        }
+
+        /* VePoints Card */
+        .vepoints-card {
+            margin: 16px 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #E8F8ED 0%, #D4F4DD 100%);
+            border-radius: 16px;
+        }
+
+        .vepoints-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .vepoints-icon {
+            font-size: 14px;
+        }
+
+        .vepoints-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4CAF50;
+            letter-spacing: 1px;
+        }
+
+        .vepoints-content {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
+
+        .vepoints-amount {
+            font-size: 36px;
+            font-weight: 700;
+            color: #333;
+            line-height: 1;
+        }
+
+        .vepoints-unit {
+            font-size: 16px;
+            color: #4CAF50;
+            margin-left: 6px;
+            font-weight: 600;
+        }
+
+        .redeem-button {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .redeem-button:active {
+            opacity: 0.7;
+        }
+
+        /* Menu Section */
+        .menu-section {
+            background: white;
+            margin: 16px 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: white;
+            width: 100%;
+            text-align: left;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background: #F8F8F8;
+            padding-left: 24px;
+        }
+
+        .menu-item:active {
+            background: #F0F0F0;
+            transform: scale(0.98);
+        }
+
+        .menu-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .menu-item:hover .menu-title {
+            color: #4CAF50;
+        }
+
+        .menu-arrow {
+            font-size: 20px;
+            color: #BDBDBD;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover .menu-arrow {
+            transform: translateX(4px);
+            color: #4CAF50;
+        }
+
+        /* Logout Section */
+        .logout-section {
+            padding: 20px;
+        }
+
+        .logout-button {
+            width: 100%;
+            padding: 16px;
+            background: #FF6B35;
+            border: none;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .logout-button:active {
+            transform: scale(0.98);
+        }
+
+        .logout-icon {
+            font-size: 18px;
+        }
+
+        .logout-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Version Text */
+        .version-text {
+            text-align: center;
+            font-size: 11px;
+            color: #BDBDBD;
+            margin: 16px 0 24px 0;
+            letter-spacing: 1px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-radius: 0 0 32px 32px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #999;
+        }
+
+        .nav-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .nav-item.active .nav-icon {
+            color: #75FF93;
+        }
+
+        .nav-item.active .nav-label {
+            color: #75FF93;
+            font-weight: 600;
+        }
+
+        /* Toast */
+        .toast {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(33, 33, 33, 0.95);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease-out;
+            max-width: 280px;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <!-- Header -->
+            <div class="header">
+                <button class="back-button" onclick="goBack()">
+                    ‹
+                </button>
+                <div class="header-title">Tài khoản cá nhân</div>
+                <div class="placeholder"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Profile Section -->
+                <div class="profile-section">
+                    <div class="avatar-container">
+                        <div class="avatar" id="avatarDisplay" onclick="document.getElementById('avatarInputAccount').click()" style="cursor:pointer;">
+                            👤
+                        </div>
+                        <div class="verified-badge" onclick="document.getElementById('avatarInputAccount').click()" style="cursor:pointer; background:#75FF93; color:#333; font-size:12px;">
+                            ✏️
+                        </div>
+                        <input type="file" id="avatarInputAccount" accept="image/*" style="display:none;" onchange="handleAccountAvatarChange(event)" />
+                    </div>
+                    
+                    <div class="user-name" id="userName">Nguyễn Minh Tuấn</div>
+                    <div class="user-phone" id="userPhone">0901234567</div>
+                </div>
+
+                <!-- VePoints Card -->
+                <div class="vepoints-card">
+                    <div class="vepoints-header">
+                        <span class="vepoints-icon">💚</span>
+                        <span class="vepoints-label">VEPOINTS TÍCH LŨY</span>
+                    </div>
+                    
+                    <div class="vepoints-content">
+                        <span class="vepoints-amount" id="pointsAmount">1.200</span>
+                        <span class="vepoints-unit">pts</span>
+                    </div>
+                    
+                    <button class="redeem-button" onclick="redeemRewards()">
+                        Đổi phần thưởng →
+                    </button>
+                </div>
+
+                <!-- Menu Section -->
+                <div class="menu-section">
+                    <button class="menu-item" onclick="navigateTo('personal-info')">
+                        <span class="menu-title">Thông tin cá nhân</span>
+                        <span class="menu-arrow">›</span>
+                    </button>
+
+                    <button class="menu-item" onclick="navigateTo('saved-addresses')">
+                        <span class="menu-title">Địa chỉ đã lưu</span>
+                        <span class="menu-arrow">›</span>
+                    </button>
+
+                    <button class="menu-item" onclick="navigateTo('payment-methods')">
+                        <span class="menu-title">Phương thức thanh toán</span>
+                        <span class="menu-arrow">›</span>
+                    </button>
+
+                    <button class="menu-item" onclick="navigateTo('history')">
+                        <span class="menu-title">Lịch sử giao dịch</span>
+                        <span class="menu-arrow">›</span>
+                    </button>
+
+                    <button class="menu-item" onclick="navigateTo('support')">
+                        <span class="menu-title">Trợ giúp & Hỗ trợ</span>
+                        <span class="menu-arrow">›</span>
+                    </button>
+                </div>
+
+                <!-- Logout Section -->
+                <div class="logout-section">
+                    <button class="logout-button" onclick="handleLogout()">
+                        <span class="logout-icon">🚪</span>
+                        <span class="logout-text">Đăng xuất</span>
+                    </button>
+                </div>
+
+                <!-- Version Text -->
+                <div class="version-text">VEGO VERSION 2.1.0</div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateToTab('home')">
+                <div class="nav-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                </div>
+                <div class="nav-label">Trang chủ</div>
+            </div>
+            <div class="nav-item" onclick="navigateToTab('activity')">
+                <div class="nav-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="nav-label">Hoạt động</div>
+            </div>
+            <div class="nav-item" onclick="navigateToTab('forum')">
+                <div class="nav-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                    </svg>
+                </div>
+                <div class="nav-label">Tin nhắn</div>
+            </div>
+            <div class="nav-item" onclick="navigateToTab('rewards')">
+                <div class="nav-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <div class="nav-label">Ưu đãi</div>
+            </div>
+            <div class="nav-item active" onclick="navigateToTab('account')">
+                <div class="nav-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <div class="nav-label">Tài khoản</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // Back button
+        function goBack() {
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = '0';
+            
+            setTimeout(() => {
+                window.location.href = '../Home/home-map.html';
+            }, 300);
+        }
+
+        // Redeem rewards
+        function redeemRewards() {
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = '0';
+            
+            setTimeout(() => {
+                window.location.href = '../Rewards/RewardsScreen.html';
+            }, 300);
+        }
+
+        // Menu navigation
+        function navigateTo(page) {
+            const pages = {
+                'personal-info': '../Profile/personal-info.html',
+                'saved-addresses': '../Profile/saved-addresses.html',
+                'payment-methods': '../Profile/payment-methods.html',
+                'history': '../Activity/activity.html?tab=completed',
+                'support': '../Profile/support.html'
+            };
+            
+            if (pages[page]) {
+                document.body.style.transition = 'opacity 0.3s ease';
+                document.body.style.opacity = '0';
+                
+                setTimeout(() => {
+                    window.location.href = pages[page];
+                }, 300);
+            }
+        }
+
+        // Logout
+        function handleLogout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                showToast('Đang đăng xuất...');
+                
+                setTimeout(() => {
+                    document.body.style.transition = 'opacity 0.3s ease';
+                    document.body.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        window.location.href = '../Auth/login-preview.html';
+                    }, 300);
+                }, 1000);
+            }
+        }
+
+        // Bottom navigation
+        function navigateToTab(tab) {
+            if (tab === 'account') return;
+            
+            const tabPages = {
+                'home': '../Home/home-map.html',
+                'activity': '../Activity/activity.html',
+                'forum': '../Home/messages.html',
+                'rewards': '../Rewards/RewardsScreen.html'
+            };
+            
+            if (tabPages[tab]) {
+                document.body.style.transition = 'opacity 0.3s ease';
+                document.body.style.opacity = '0';
+                
+                setTimeout(() => {
+                    window.location.href = tabPages[tab];
+                }, 300);
+            }
+        }
+
+        function handleAccountAvatarChange(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const dataUrl = ev.target.result;
+                localStorage.setItem('userAvatar', dataUrl);
+                document.getElementById('avatarDisplay').innerHTML = `<img src="${dataUrl}" alt="Avatar">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Load saved data
+        window.addEventListener('load', () => {
+            // Load avatar
+            const savedAvatar = localStorage.getItem('userAvatar');
+            if (savedAvatar) {
+                document.getElementById('avatarDisplay').innerHTML = `<img src="${savedAvatar}" alt="Avatar">`;
+            }
+            
+            // Load name
+            const savedName = localStorage.getItem('userName');
+            if (savedName) {
+                document.getElementById('userName').textContent = savedName;
+            }
+            
+            // Load phone
+            const savedPhone = localStorage.getItem('userPhone');
+            if (savedPhone) {
+                document.getElementById('userPhone').textContent = savedPhone;
+            }
+            
+            // Load points - ưu tiên sessionStorage (trong phiên), mặc định 2000
+            const savedPoints = sessionStorage.getItem('userPoints') || '2000';
+            document.getElementById('pointsAmount').textContent = parseInt(savedPoints).toLocaleString('vi-VN');
+        });
+    </script>
+</body>
+</html>

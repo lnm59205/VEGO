@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeGo - Chào mừng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            position: relative;
+            transform: scale(0.8);
+            transform-origin: center center;
+            flex-shrink: 0;
+            margin: -81px 0;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background-color: #F8F8F8;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            height: 44px;
+            background-color: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 40px;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #75FF93 0%, #5EE87A 100%);
+            border-radius: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(117, 255, 147, 0.2);
+        }
+
+        .app-icon img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .app-name {
+            font-size: 64px;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .app-name-green {
+            color: #75FF93;
+        }
+
+        .tagline {
+            font-size: 20px;
+            color: #AAAAAA;
+            text-align: center;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .button-container {
+            width: 100%;
+            padding: 0 40px;
+            position: absolute;
+            bottom: 60px;
+        }
+
+        .btn {
+            width: 100%;
+            height: 56px;
+            border-radius: 28px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #75FF93 0%, #5EE87A 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(117, 255, 147, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(117, 255, 147, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #333333;
+            border: 2px solid #E0E0E0;
+        }
+
+        .btn-secondary:hover {
+            background: #F5F5F5;
+            border-color: #CCCCCC;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Animation classes */
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .app-icon { animation-delay: 0.2s; }
+        .app-name { animation-delay: 0.4s; }
+        .tagline { animation-delay: 0.6s; }
+        .button-container { animation-delay: 0.8s; }
+
+        /* Responsive - phone frame stays fixed */
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div>📶 📶 🔋</div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="logo-container">
+                    <!-- App Icon -->
+                    <div class="app-icon fade-in-up">
+                        <img src="../../../assets/images/logo.png" alt="VeGo Logo" />
+                    </div>
+
+                    <!-- App Name -->
+                    <div class="app-name fade-in-up">
+                        Ve<span class="app-name-green">Go</span>
+                    </div>
+
+                    <!-- Tagline -->
+                    <div class="tagline fade-in-up">Ve Chai Công Nghệ</div>
+                </div>
+            </div>
+
+            <!-- Button Container -->
+            <div class="button-container fade-in-up">
+                <button class="btn btn-primary" onclick="goToLogin()">
+                    Đăng nhập
+                </button>
+                
+                <button class="btn btn-secondary" onclick="goToRegister()">
+                    Tạo tài khoản
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToLogin() {
+            // Hiệu ứng chuyển trang
+            document.querySelector('.phone-screen').style.opacity = '0';
+            document.querySelector('.phone-screen').style.transition = 'opacity 0.3s ease-out';
+            
+            setTimeout(() => {
+                window.location.href = 'email-login.html';
+            }, 300);
+        }
+        
+        function goToRegister() {
+            // Hiệu ứng chuyển trang
+            document.querySelector('.phone-screen').style.opacity = '0';
+            document.querySelector('.phone-screen').style.transition = 'opacity 0.3s ease-out';
+            
+            setTimeout(() => {
+                window.location.href = 'register-preview.html';
+            }, 300);
+        }
+
+        // Thêm hiệu ứng ripple cho buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255,255,255,0.3)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.pointerEvents = 'none';
+                
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
